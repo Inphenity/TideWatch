@@ -1,0 +1,17 @@
+# Local runtime state — generated on the device itself, never checked in
+config.json
+last_good.png
+.reload_trigger
+.pin_request.json
+.hotspot_info.json
+.station_coords.json
+*.log
+
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# OS cruft
+.DS_Store
+Thumbs.db

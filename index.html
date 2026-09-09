@@ -1,0 +1,2820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tide Watch Configurator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sand:#F1EAD9;
+    --sand-deep:#E4D9BE;
+    --marsh-dark:#1F3B39;
+    --marsh-mid:#2E5852;
+    --spartina:#74936B;
+    --spartina-light:#9BB58A;
+    --tidal-teal:#3E7C82;
+    --gold:#C79A3D;
+    --ink:#20302C;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Inter',system-ui,sans-serif;
+    background:var(--sand);
+    color:var(--ink);
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:0 0 60px 0;}
+
+  header{
+    background:linear-gradient(180deg,var(--marsh-dark) 0%,var(--marsh-mid) 100%);
+    color:var(--sand);
+    padding:34px 28px 26px 28px;
+  }
+  header .eyebrow{
+    font-size:11px;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--gold);font-weight:600;margin-bottom:6px;
+  }
+  header h1{
+    font-family:'Fraunces',serif;font-weight:600;font-size:30px;margin:0 0 6px 0;
+  }
+  header p{margin:0;font-size:14px;opacity:0.75;max-width:52ch;}
+
+  section{padding:26px 28px;border-bottom:1px solid rgba(32,48,44,0.12);}
+  section h2{
+    font-family:'Fraunces',serif;font-size:18px;font-weight:600;
+    color:var(--marsh-dark);margin:0 0 4px 0;
+  }
+  section .hint{font-size:13px;opacity:0.6;margin:0 0 16px 0;line-height:1.5;}
+
+  label{display:block;font-size:12px;font-weight:600;letter-spacing:0.03em;color:var(--marsh-mid);margin-bottom:5px;}
+  input[type=text],input[type=password],input[type=number]{
+    width:100%;padding:9px 11px;border:1px solid rgba(32,48,44,0.2);
+    border-radius:7px;font-size:14px;font-family:'IBM Plex Mono',monospace;
+    background:#fff;color:var(--ink);
+  }
+  input:focus,select:focus{outline:2px solid var(--tidal-teal);outline-offset:1px;}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+  .field{margin-bottom:14px;}
+
+  select{
+    width:100%;padding:9px 11px;border:1px solid rgba(32,48,44,0.2);
+    border-radius:7px;font-size:14px;background:#fff;color:var(--ink);
+    font-family:'Inter',sans-serif;
+  }
+
+  .quickset{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+  .chip{
+    padding:7px 14px;border-radius:20px;border:1px solid var(--tidal-teal);
+    background:#fff;color:var(--tidal-teal);font-size:13px;font-weight:600;
+    cursor:pointer;font-family:'Inter',sans-serif;
+  }
+  .chip.active{background:var(--tidal-teal);color:#fff;}
+
+  .wifi-card{
+    background:#fff;border:1px solid rgba(32,48,44,0.12);border-radius:10px;
+    padding:14px;margin-bottom:12px;position:relative;
+  }
+  .wifi-card .row{margin-bottom:0;}
+  .remove-net{
+    position:absolute;top:10px;right:10px;background:none;border:none;
+    color:#A3542E;font-size:12px;cursor:pointer;font-weight:600;
+  }
+  .add-net{
+    background:none;border:1.5px dashed var(--spartina);color:var(--marsh-mid);
+    border-radius:8px;padding:10px;width:100%;font-size:13px;font-weight:600;
+    cursor:pointer;font-family:'Inter',sans-serif;
+  }
+
+  .toggle-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .toggle-row input{width:auto;}
+  .toggle-row span{font-size:13px;}
+
+  .generate-btn{
+    width:100%;padding:16px;background:var(--gold);color:var(--marsh-dark);
+    border:none;border-radius:10px;font-size:15px;font-weight:700;
+    cursor:pointer;font-family:'Inter',sans-serif;margin-top:6px;
+  }
+  .generate-btn:hover{background:#d9ab48;}
+
+  #output{padding:26px 28px;display:none;}
+  #output.show{display:block;}
+  .success-box{
+    background:var(--marsh-dark);color:var(--sand);border-radius:10px;padding:20px;
+  }
+  .success-box h3{font-family:'Fraunces',serif;margin:0 0 8px 0;font-size:17px;color:var(--gold);}
+  .success-box ol{font-size:13.5px;line-height:1.8;padding-left:20px;margin:0 0 14px 0;}
+  .success-box code{background:rgba(241,234,217,0.12);padding:1px 6px;border-radius:4px;font-family:'IBM Plex Mono',monospace;}
+  .download-btn{
+    display:inline-block;background:var(--gold);color:var(--marsh-dark);
+    padding:11px 20px;border-radius:8px;font-weight:700;text-decoration:none;
+    font-size:14px;
+  }
+  .script-box{
+    background:#12211f;border-radius:10px;overflow:hidden;margin-bottom:16px;
+  }
+  .script-box-header{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:8px 12px;background:rgba(241,234,217,0.06);
+    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--sand);
+  }
+  .copy-btn{
+    background:var(--gold);color:var(--marsh-dark);border:none;
+    padding:6px 14px;border-radius:6px;font-weight:700;font-size:12px;
+    cursor:pointer;font-family:'Inter',sans-serif;
+  }
+  .copy-btn.copied{background:var(--spartina-light);}
+  #scriptOutput{
+    width:100%;height:260px;background:#12211f;color:#d8e6d2;
+    border:none;padding:12px;font-family:'IBM Plex Mono',monospace;
+    font-size:12px;line-height:1.5;resize:vertical;box-sizing:border-box;
+    white-space:pre;overflow:auto;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Tide Watch Configurator</div>
+    <h1>Set up your e-ink tide monitor</h1>
+    <p>Answer a few questions and this generates one install script for your Raspberry Pi Zero W — Wi-Fi, display driver, station, and refresh timing all baked in.</p>
+  </header>
+
+  <section>
+    <h2>Station</h2>
+    <p class="hint">Enter the NOAA station ID for your tide station — find yours at <a href="https://tidesandcurrents.noaa.gov/map/" target="_blank" rel="noopener">tidesandcurrents.noaa.gov/map</a>. Defaults below are just a generic example (San Francisco, CA); change them to your own station.</p>
+    <div class="row">
+      <div class="field">
+        <label>NOAA Station ID</label>
+        <input type="text" id="stationId" value="9414290">
+      </div>
+      <div class="field">
+        <label>Display label</label>
+        <input type="text" id="stationLabel" value="San Francisco, CA">
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Display hardware</h2>
+    <p class="hint">Pick your panel if you know it. If not, choose "Decide later" — the script will run in preview mode (saves a PNG instead of drawing to a screen) until you rerun it with a driver selected.</p>
+    <div class="field">
+      <label>E-ink panel</label>
+      <select id="displayModel">
+        <option value="epd2in13_V4|250|122">Waveshare 2.13" (250×122)</option>
+        <option value="epd2in7|264|176">Waveshare 2.7" (264×176)</option>
+        <option value="epd2in9_V2|296|128">Waveshare 2.9" (296×128)</option>
+        <option value="epd4in2_V2|400|300">Waveshare 4.2" (400×300)</option>
+        <option value="epd7in5_V2|800|480">Waveshare 7.5" (800×480)</option>
+        <option value="|250|122">Decide later (preview mode, 2.13" layout)</option>
+      </select>
+    </div>
+    <div class="toggle-row">
+      <input type="checkbox" id="flip180">
+      <span>Flip display 180° (for panels mounted upside down)</span>
+    </div>
+    <div class="field" style="margin-top:14px;">
+      <label>Bottom display</label>
+      <select id="displayMode">
+        <option value="tide_curve">Tide curve</option>
+        <option value="sun_graphic">Sunrise &amp; sunset graphic</option>
+        <option value="combined">Both — sun graphic above the tide curve</option>
+      </select>
+      <div class="hint" style="margin-top:4px;">"Both" needs real room to keep each half legible — it automatically falls back to just the tide curve on the 2.13" and 2.9" panels regardless of this setting.</div>
+    </div>
+    <div class="toggle-row" id="showSunTimesRow">
+      <input type="checkbox" id="showSunTimes" checked>
+      <span>Show sunrise/sunset marks on the tide curve</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Wi-Fi networks</h2>
+    <p class="hint">Add every network the Pi should be able to join — home, a mobile hotspot, wherever it might travel. Listed first = highest priority.</p>
+    <div id="wifiList"></div>
+    <button class="add-net" id="addNet" type="button">+ Add another network</button>
+    <div class="toggle-row" style="margin-top:14px;">
+      <input type="checkbox" id="disablePowersave" checked>
+      <span>Disable Wi-Fi power-save (recommended — the Pi Zero W's Wi-Fi chip is known to intermittently drop connections when its power-save mode kicks in during idle moments; this trades a small amount of extra power draw for a much more reliable connection)</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Refresh interval</h2>
+    <p class="hint">Tide predictions change slowly — there's no benefit to refreshing more than every 10–20 minutes, and it adds wear to the e-ink panel.</p>
+    <div class="quickset" id="refreshChips">
+      <div class="chip" data-val="10">10 min</div>
+      <div class="chip active" data-val="20">20 min</div>
+      <div class="chip" data-val="30">30 min</div>
+      <div class="chip" data-val="60">60 min</div>
+    </div>
+    <div class="field">
+      <label>Custom (minutes)</label>
+      <input type="number" id="refreshCustom" min="5" placeholder="e.g. 15">
+    </div>
+  </section>
+
+  <section>
+    <h2>Device</h2>
+    <div class="field">
+      <label>Hostname</label>
+      <input type="text" id="hostname" value="tidewatch">
+    </div>
+  </section>
+
+  <section>
+    <h2>Web config</h2>
+    <p class="hint">Installs a small page at <code>http://&lt;hostname&gt;.local:8080</code> where you can change settings (station, refresh interval, flip, PiSugar) from a browser instead of SSH. Logging in requires physical access to the device: clicking "Show PIN on display" generates a fresh, single-use PIN and shows it on the actual e-ink panel — there's nothing to configure here, and no fixed password sitting in a file to worry about.</p>
+  </section>
+
+  <section>
+    <h2>Wi-Fi fallback hotspot</h2>
+    <p class="hint">If none of the Wi-Fi networks you configured are reachable — the device gets moved, a router changes — this makes the Pi broadcast its own network so it's still reachable, rather than going dark. It checks periodically and switches back on its own once a known network is available again.</p>
+    <div class="toggle-row">
+      <input type="checkbox" id="hotspotEnabled" checked>
+      <span>Enable fallback hotspot</span>
+    </div>
+    <div id="hotspotFields">
+      <div class="field">
+        <label>Hotspot network name (SSID)</label>
+        <input type="text" id="hotspotSsid" value="TideWatch Setup">
+        <div class="hint" style="margin-top:4px;">No password to set here — one is randomly generated and shown on the device's own display each time the hotspot actually activates, so it's only ever knowable by looking at the device. Once connected, reach it at <code>http://10.42.0.1:8080</code>.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Battery</h2>
+    <p class="hint">If you've got a PiSugar battery HAT attached, the install script will set up pisugar-server and the display will show a battery icon and percentage next to the last-updated time.</p>
+    <div class="toggle-row">
+      <input type="checkbox" id="pisugarEnabled">
+      <span>I have a PiSugar battery HAT attached</span>
+    </div>
+    <div id="pisugarModelRow" class="field" style="display:none; margin-top:12px;">
+      <label>Which PiSugar model?</label>
+      <select id="pisugarModel">
+        <option value="PiSugar 2 (4-LEDs)">PiSugar 2 (4-LED)</option>
+        <option value="PiSugar 2 (2-LEDs)">PiSugar 2 (2-LED, newer)</option>
+        <option value="PiSugar 2 Pro">PiSugar 2 Pro</option>
+        <option value="PiSugar 3">PiSugar 3</option>
+        <option value="">S / S Plus / 3 Plus / not sure</option>
+      </select>
+      <p class="hint" style="margin-top:8px;">PiSugar's installer normally stops to ask which model you have — pasting the whole script at once means that prompt never gets a chance to be answered. For the four listed models, the script answers it for you automatically. For S/S Plus/3 Plus, PiSugar doesn't document a non-interactive answer, so the installer runs as a separate step at the end instead, where its prompt can actually reach you.</p>
+    </div>
+  </section>
+
+  <section style="border-bottom:none;">
+    <button class="generate-btn" id="generateBtn" type="button">Generate install script</button>
+  </section>
+
+  <div id="output">
+    <div class="success-box">
+      <h3>Your script is ready</h3>
+      <ol>
+        <li>Flash Raspberry Pi OS Lite to your SD card, boot the Pi Zero W, and SSH in.</li>
+        <li>Copy the script below and paste it into your SSH session (or download the file instead).</li>
+        <li>Run <code>chmod +x install.sh && ./install.sh</code> and let it finish.</li>
+        <li>Reboot — the display service starts automatically from then on.</li>
+      </ol>
+      <div class="script-box">
+        <div class="script-box-header">
+          <span>install.sh</span>
+          <button type="button" class="copy-btn" id="copyBtn">Copy to clipboard</button>
+        </div>
+        <textarea id="scriptOutput" readonly spellcheck="false"></textarea>
+      </div>
+      <a class="download-btn" id="downloadLink" download="install.sh">Download install.sh instead</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const wifiList = document.getElementById('wifiList');
+let netCount = 0;
+
+function addNetworkRow(prefill){
+  netCount++;
+  const id = netCount;
+  const card = document.createElement('div');
+  card.className = 'wifi-card';
+  card.dataset.netId = id;
+  card.innerHTML = `
+    ${id > 1 ? '<button type="button" class="remove-net">Remove</button>' : ''}
+    <div class="row">
+      <div class="field" style="margin-bottom:0;">
+        <label>SSID</label>
+        <input type="text" class="net-ssid" value="${prefill && prefill.ssid ? prefill.ssid : ''}" placeholder="Home WiFi">
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label>Password</label>
+        <input type="password" class="net-pass" value="${prefill && prefill.pass ? prefill.pass : ''}" placeholder="">
+      </div>
+    </div>
+  `;
+  wifiList.appendChild(card);
+  const removeBtn = card.querySelector('.remove-net');
+  if(removeBtn) removeBtn.addEventListener('click', () => card.remove());
+}
+addNetworkRow({ssid:'', pass:''});
+
+document.getElementById('addNet').addEventListener('click', () => addNetworkRow());
+
+document.getElementById('pisugarEnabled').addEventListener('change', (e) => {
+  document.getElementById('pisugarModelRow').style.display = e.target.checked ? 'block' : 'none';
+});
+
+document.getElementById('hotspotEnabled').addEventListener('change', (e) => {
+  document.getElementById('hotspotFields').style.display = e.target.checked ? 'block' : 'none';
+});
+
+document.getElementById('displayMode').addEventListener('change', (e) => {
+  document.getElementById('showSunTimesRow').style.display = e.target.value === 'tide_curve' ? 'flex' : 'none';
+});
+
+let refreshMinutes = 20;
+document.querySelectorAll('#refreshChips .chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('#refreshChips .chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    refreshMinutes = parseInt(chip.dataset.val, 10);
+    document.getElementById('refreshCustom').value = '';
+  });
+});
+document.getElementById('refreshCustom').addEventListener('input', (e) => {
+  if(e.target.value){
+    document.querySelectorAll('#refreshChips .chip').forEach(c => c.classList.remove('active'));
+    refreshMinutes = parseInt(e.target.value, 10);
+  }
+});
+
+// The tide_eink.py source, embedded verbatim so the generated script
+// is fully self-contained (no separate download step needed).
+const TIDE_EINK_PY = String.raw`#!/usr/bin/env python3
+"""
+Tide Watch — a tide monitor for a Raspberry Pi Zero W + e-ink display.
+
+Pulls live predictions from NOAA CO-OPS for whatever station you point
+it at and renders a simple black & white dashboard: current tide
+height, rising/falling state, next high/low, and a 24hr curve.
+
+STRUCTURE
+---------
+- fetch_tide_data()   : talks to NOAA, no display code at all
+- render_image()      : builds a PIL Image, no NOAA or hardware code at all
+- display_image()     : the ONLY place that talks to your specific e-ink panel
+- main()              : loop that ties the three together
+
+When you know your exact display model, you only need to edit
+DISPLAY_WIDTH / DISPLAY_HEIGHT and the display_image() function below.
+Everything else (data + layout) is written to scale to whatever
+resolution you set.
+"""
+
+import json
+import math
+import os
+import subprocess
+import sys
+import time
+import traceback
+from datetime import datetime, timedelta
+
+import requests
+from PIL import Image, ImageDraw, ImageFont
+
+# ----------------------------------------------------------------------
+# CONFIG - defaults, overridden by config.json if present (see the
+# Tide Watch Configurator, which generates that file for you)
+# ----------------------------------------------------------------------
+
+CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
+
+DEFAULTS = {
+    "station_id": "9414290",        # San Francisco, CA -- a generic example; change to your own station
+    "station_label": "San Francisco, CA",
+    "display_driver": "epd2in13_V4",
+    "display_width": 250,
+    "display_height": 122,
+    "refresh_minutes": 20,
+    "pisugar_enabled": False,
+    "flip180": False,
+    "show_sun_times": True,
+    "display_mode": "tide_curve",
+}
+
+
+def load_config():
+    cfg = dict(DEFAULTS)
+    if os.path.exists(CONFIG_PATH):
+        try:
+            with open(CONFIG_PATH) as f:
+                cfg.update(json.load(f))
+        except Exception:
+            print("Warning: couldn't parse config.json, using defaults")
+    return cfg
+
+
+CONFIG = load_config()
+STATION_ID = CONFIG["station_id"]
+STATION_LABEL = CONFIG["station_label"]
+DISPLAY_DRIVER = CONFIG["display_driver"]  # e.g. "epd2in13_V4", or "" for preview-only
+DISPLAY_WIDTH = CONFIG["display_width"]
+DISPLAY_HEIGHT = CONFIG["display_height"]
+REFRESH_INTERVAL_MINUTES = CONFIG["refresh_minutes"]
+PISUGAR_ENABLED = CONFIG["pisugar_enabled"]
+FLIP180 = CONFIG["flip180"]
+SHOW_SUN_TIMES = CONFIG["show_sun_times"]
+DISPLAY_MODE = CONFIG["display_mode"]  # "tide_curve" or "sun_graphic"
+
+# Fonts that ship on Raspberry Pi OS by default. If missing, run:
+#   sudo apt install fonts-dejavu
+FONT_DIR = "/usr/share/fonts/truetype/dejavu/"
+FONT_BOLD = FONT_DIR + "DejaVuSans-Bold.ttf"
+FONT_REGULAR = FONT_DIR + "DejaVuSans.ttf"
+FONT_MONO = FONT_DIR + "DejaVuSansMono.ttf"
+
+# Where to keep the last successful reading, so a temporary network
+# blip doesn't leave the screen blank.
+CACHE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "last_good.png")
+
+# Written by config_server.py (the web config page) after saving new
+# settings. This process polls for it and exits cleanly when found —
+# systemd (Restart=always) immediately relaunches it, which re-reads
+# config.json from scratch. The config server never touches the EPD
+# driver or GPIO itself; this file-based handoff is the only thing it
+# does to affect the display, which avoids the two processes ever
+# fighting over the same hardware.
+RELOAD_TRIGGER_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".reload_trigger")
+
+# Written by config_server.py when someone clicks "Show login PIN" on
+# the web config page — contains a freshly generated PIN and its own
+# expiry timestamp. This process (which already owns the EPD driver)
+# draws that PIN on the physical screen; config_server.py never touches
+# the display directly. The expiry is read from THIS file and enforced
+# by this process's own clock — not by trusting a signal from the web
+# server — so a PIN screen can never get stuck up forever even if the
+# web server process restarts or crashes while one is showing.
+PIN_REQUEST_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".pin_request.json")
+
+# Written by hotspot_monitor.sh (which already runs as root and owns
+# the actual nmcli/network side of this) whenever it brings the
+# fallback hotspot up — contains the network name and the freshly
+# random password it just set. This process draws it on the physical
+# screen the same file-handoff way as the login PIN above, and keeps
+# it showing for as long as the file exists — hotspot_monitor.sh
+# deletes it once it successfully reconnects to a known network, which
+# is what tells this process to revert to the normal tide display.
+HOTSPOT_INFO_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".hotspot_info.json")
+
+
+# ----------------------------------------------------------------------
+# DATA
+# ----------------------------------------------------------------------
+
+# ----------------------------------------------------------------------
+# BATTERY (optional — only used if pisugar_enabled is set in config.json)
+# ----------------------------------------------------------------------
+#
+# Reads from pisugar-server's local socket API rather than talking to the
+# PiSugar hardware directly over I2C. pisugar-server auto-detects which
+# PiSugar model is attached (S, S Plus, 2, 2 Pro, 3, 3 Plus all speak the
+# same socket protocol once the server's running), so this one code path
+# covers every model without needing per-model register maps.
+
+import socket as _socket
+
+PISUGAR_SOCKET_PATH = "/tmp/pisugar-server.sock"
+PISUGAR_TCP_FALLBACK = ("127.0.0.1", 8423)  # used if the unix socket isn't available
+
+
+def _pisugar_request(command, timeout=3):
+    """Send one command to pisugar-server and return its text response,
+    or None if the server isn't reachable. Tries the unix socket first
+    (the default), then falls back to TCP (used if pisugar-server was
+    configured for network access instead)."""
+    for sock_factory in (
+        lambda: _socket.socket(_socket.AF_UNIX, _socket.SOCK_STREAM),
+        lambda: _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM),
+    ):
+        try:
+            s = sock_factory()
+            s.settimeout(timeout)
+            if s.family == _socket.AF_UNIX:
+                s.connect(PISUGAR_SOCKET_PATH)
+            else:
+                s.connect(PISUGAR_TCP_FALLBACK)
+            s.sendall((command + "\n").encode())
+            data = s.recv(4096).decode(errors="replace").strip()
+            s.close()
+            return data
+        except (OSError, _socket.error):
+            continue
+    return None
+
+
+def get_battery_status():
+    """Returns (percent: float, charging: bool) or None if unreachable.
+
+    pisugar-server responses look like "battery: 87.65" and
+    "battery_charging: true" — plain "key: value" text, not JSON.
+    """
+    percent_resp = _pisugar_request("get battery")
+    charging_resp = _pisugar_request("get battery_charging")
+    if not percent_resp or ":" not in percent_resp:
+        return None
+    try:
+        percent = float(percent_resp.split(":", 1)[1].strip())
+    except ValueError:
+        return None
+    charging = bool(charging_resp and "true" in charging_resp.lower())
+    return percent, charging
+
+
+def _api_url(**params):
+    base = "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter"
+    fixed = dict(
+        station=STATION_ID,
+        datum="MLLW",
+        units="english",
+        time_zone="lst_ldt",
+        format="json",
+        application="tide_watch_eink",
+    )
+    fixed.update(params)
+    return base, fixed
+
+
+def fetch_tide_data():
+    """Returns (hilo_events, curve_points). Raises on failure.
+
+    Only high/low predictions are fetched from NOAA. Many NOAA stations
+    are "subordinate stations" — NOAA's own documentation is explicit
+    that these only support hi/lo predictions, generated by applying
+    time/height offsets to a nearby reference station. A continuous
+    6-minute-interval curve requires harmonic constants that subordinate
+    stations don't have; requesting one for a subordinate station fails
+    outright with "No Predictions data was found" — confirmed against a
+    real subordinate station's actual API response during this
+    project's own development, not assumed. The smooth curve is
+    synthesized locally instead (see _synthesize_curve), which works
+    the same way regardless of whether a given station is harmonic or
+    subordinate — so this approach is used uniformly for every station,
+    not just ones known to be subordinate.
+    """
+    today = datetime.now()
+    window_start = today - timedelta(days=1)
+    week_out = today + timedelta(days=7)
+
+    hilo_url, hilo_params = _api_url(
+        product="predictions",
+        interval="hilo",
+        begin_date=window_start.strftime("%Y%m%d"),
+        end_date=week_out.strftime("%Y%m%d"),
+    )
+
+    hilo_resp = requests.get(hilo_url, params=hilo_params, timeout=15).json()
+
+    if "error" in hilo_resp:
+        msg = hilo_resp["error"].get("message", "NOAA API error")
+        raise RuntimeError(msg)
+
+    hilo = [
+        {
+            "time": datetime.strptime(p["t"], "%Y-%m-%d %H:%M"),
+            "value": float(p["v"]),
+            "type": p["type"],  # "H" or "L"
+        }
+        for p in hilo_resp.get("predictions", [])
+    ]
+
+    curve_start = today.replace(hour=0, minute=0, second=0, microsecond=0)
+    curve_end = curve_start + timedelta(days=1)
+    curve = _synthesize_curve(hilo, curve_start, curve_end)
+    return hilo, curve
+
+
+def _synthesize_curve(hilo, window_start, window_end, step_minutes=6):
+    """Builds a smooth tide curve between window_start and window_end by
+    cosine-interpolating between each consecutive pair of high/low
+    points. This is a standard, reasonably accurate approximation of a
+    tide's actual shape between two known extrema — a true harmonic
+    curve is only computable for stations with published harmonic
+    constants, which subordinate stations (see fetch_tide_data) don't
+    have."""
+    points = []
+    t = window_start
+    while t <= window_end:
+        before = after = None
+        for i in range(len(hilo) - 1):
+            if hilo[i]["time"] <= t <= hilo[i + 1]["time"]:
+                before, after = hilo[i], hilo[i + 1]
+                break
+        if before and after:
+            span = (after["time"] - before["time"]).total_seconds()
+            frac = (t - before["time"]).total_seconds() / span if span else 0
+            value = before["value"] + (after["value"] - before["value"]) * (1 - math.cos(math.pi * frac)) / 2
+        elif hilo:
+            # t falls outside the fetched hilo range entirely — hold at
+            # the nearest known extremum rather than guessing further
+            nearest = min(hilo, key=lambda p: abs((p["time"] - t).total_seconds()))
+            value = nearest["value"]
+        else:
+            value = 0.0
+        points.append({"time": t, "value": value})
+        t += timedelta(minutes=step_minutes)
+    return points
+
+
+def current_reading(curve):
+    """Interpolate current height + rising/falling from the 6-min curve."""
+    now = datetime.now()
+    for i in range(len(curve) - 1):
+        a, b = curve[i], curve[i + 1]
+        if a["time"] <= now <= b["time"]:
+            span = (b["time"] - a["time"]).total_seconds()
+            frac = (now - a["time"]).total_seconds() / span if span else 0
+            value = a["value"] + (b["value"] - a["value"]) * frac
+            return value, b["value"] > a["value"]
+    # fallback: nearest point
+    nearest = min(curve, key=lambda p: abs((p["time"] - now).total_seconds()))
+    return nearest["value"], True
+
+
+def next_events(hilo):
+    now = datetime.now()
+    upcoming = [e for e in hilo if e["time"] > now]
+    next_high = next((e for e in upcoming if e["type"] == "H"), None)
+    next_low = next((e for e in upcoming if e["type"] == "L"), None)
+    return next_high, next_low
+
+
+# ----------------------------------------------------------------------
+# RENDERING (pure PIL, no hardware calls, no NOAA calls)
+# ----------------------------------------------------------------------
+
+def _draw_right_aligned(draw, x_right, y, text, font, fill=0):
+    """Draw text so its right edge lands at x_right, regardless of font/DPI.
+    Using a fixed pixel offset from the edge breaks once font size scales
+    with display resolution (e.g. going from a 2.13" to a 7.5" panel)."""
+    bbox = draw.textbbox((0, 0), text, font=font)
+    w = bbox[2] - bbox[0]
+    draw.text((x_right - w, y), text, font=font, fill=fill)
+
+
+def _fit_font(draw, text, font_path, max_size, max_width, min_size=9):
+    """Pick the largest font size (up to max_size) whose rendered width
+    for the given text still fits inside max_width. A font sized purely as a
+    percentage of screen *height* can still overflow the available
+    *width* on a panel with a different aspect ratio (e.g. a hero
+    number wide enough at 2.13" but too wide once the "Next High/Low"
+    column collides with it on a 7.5" panel), so layout that depends
+    on two things not overlapping needs to check actual pixel width,
+    not just assume the percentage-based size will fit."""
+    size = max_size
+    while size > min_size:
+        f = ImageFont.truetype(font_path, size)
+        bbox = draw.textbbox((0, 0), text, font=f)
+        if bbox[2] - bbox[0] <= max_width:
+            return f
+        size -= 1
+    return ImageFont.truetype(font_path, min_size)
+
+
+def _fit_font_height(draw, text, font_path, max_size, max_height, min_size=7):
+    """Same idea as _fit_font, but constrained by vertical space instead
+    of horizontal. Used where a gap between two other elements (rather
+    than the panel edge) bounds how tall something can be — guessing a
+    y-coordinate for that gap without measuring both neighbors is how
+    the stamp ended up with zero margin against one side or the other
+    in earlier attempts at this."""
+    size = max_size
+    while size > min_size:
+        f = ImageFont.truetype(font_path, size)
+        bbox = draw.textbbox((0, 0), text, font=f)
+        if bbox[3] - bbox[1] <= max_height:
+            return f
+        size -= 1
+    return ImageFont.truetype(font_path, min_size)
+
+
+def _fit_font_to_bottom_edge(draw, text, font_path, max_size, max_bottom, min_size=7):
+    """Like _fit_font_height, but checks the full distance from a text's
+    nominal draw position to its bottom-most ink (bbox[3], measured at
+    y=0), not just the glyph's own height on its own. Different glyphs
+    carry different leading offsets before their ink actually starts
+    below the y-coordinate you draw at — using only glyph height
+    understated how much *total* vertical room a string needs from its
+    draw position, which is exactly how a sunrise/sunset tick label
+    ended up using every last pixel row down to the panel's physical
+    edge despite a couple of pixels of margin supposedly still being
+    reserved. Confirmed by measuring the actual rendered bbox at its
+    real draw position, not assumed from glyph height alone."""
+    size = max_size
+    while size > min_size:
+        f = ImageFont.truetype(font_path, size)
+        bbox = draw.textbbox((0, 0), text, font=f)
+        if bbox[3] <= max_bottom:
+            return f
+        size -= 1
+    return ImageFont.truetype(font_path, min_size)
+
+
+def _fit_font_both(draw, text, font_path, max_size, max_width, max_height, min_size=9):
+    """Combines _fit_font and _fit_font_height: picks the largest size
+    that satisfies a width AND a height constraint simultaneously. Used
+    where a text element sharing a row with something else (like the
+    wifi/IP block sharing the rising/falling row) must not just fit
+    horizontally next to it, but also must not grow taller than that
+    row's own established height — a font sized against width alone can
+    end up unexpectedly tall at some aspect ratios, extending the whole
+    row down far enough to collide with whatever's positioned below it
+    based on a completely different part of the layout (confirmed by
+    rendering: this is exactly what happened before this fix existed)."""
+    size = max_size
+    while size > min_size:
+        f = ImageFont.truetype(font_path, size)
+        bbox = draw.textbbox((0, 0), text, font=f)
+        w = bbox[2] - bbox[0]
+        h = bbox[3] - bbox[1]
+        if w <= max_width and h <= max_height:
+            return f
+        size -= 1
+    return ImageFont.truetype(font_path, min_size)
+
+
+def _battery_block_width(draw, percent, font, height):
+    """Pixel width of the battery icon + percentage text as one unit,
+    so the header row can reserve space for it the same way it already
+    does for the timestamp."""
+    text = f"{percent:.0f}%"
+    bbox = draw.textbbox((0, 0), text, font=font)
+    text_w = bbox[2] - bbox[0]
+    icon_h = max(6, int(height * 0.045))
+    icon_w = max(10, int(icon_h * 1.8))
+    nub_w = max(1, int(icon_w * 0.10))
+    gap = max(2, int(height * 0.02))
+    return icon_w + nub_w + gap + text_w
+
+
+def _draw_battery_block(draw, x_right, y_center, percent, charging, font, height):
+    """Draws a small battery icon (outline + charge-level fill) followed
+    by a percentage readout, ending at x_right. A leading '+' on the
+    text stands in for a charging indicator rather than trying to draw
+    a legible lightning bolt at icon sizes as small as ~6px tall."""
+    text = ("+" if charging else "") + f"{percent:.0f}%"
+    bbox = draw.textbbox((0, 0), text, font=font)
+    text_w = bbox[2] - bbox[0]
+    text_h = bbox[3] - bbox[1]
+
+    icon_h = max(6, int(height * 0.045))
+    icon_w = max(10, int(icon_h * 1.8))
+    nub_w = max(1, int(icon_w * 0.10))
+    gap = max(2, int(height * 0.02))
+
+    text_x = x_right - text_w
+    nub_x = text_x - gap - nub_w
+    icon_x = nub_x - icon_w
+    icon_y = y_center - icon_h // 2
+
+    draw.rectangle([icon_x, icon_y, icon_x + icon_w, icon_y + icon_h], outline=0, width=1)
+    nub_h = max(2, int(icon_h * 0.5))
+    draw.rectangle(
+        [nub_x, icon_y + (icon_h - nub_h) // 2, nub_x + nub_w, icon_y + (icon_h - nub_h) // 2 + nub_h],
+        fill=0,
+    )
+    inset = 2
+    fill_w = max(0, int((icon_w - 2 * inset) * max(0, min(100, percent)) / 100))
+    if fill_w > 0:
+        draw.rectangle([icon_x + inset, icon_y + inset, icon_x + inset + fill_w, icon_y + icon_h - inset], fill=0)
+
+    draw.text((text_x, y_center - text_h // 2), text, font=font, fill=0)
+
+
+def _draw_wifi_icon(draw, x, y, size):
+    """Draws a small classic wifi-signal glyph (three nested arcs over a
+    dot) with its top-left corner at (x, y), sized to fit within a
+    size x size box. PIL angles are measured clockwise from 3 o'clock in
+    image coordinates (y increases downward), so 270 is 'straight up' —
+    arcs spanning roughly 205-335 degrees curve over the top of the dot,
+    matching the familiar icon shape."""
+    cx = x + size // 2
+    cy_dot = y + size - 1
+    r_dot = max(1, size // 10)
+    draw.ellipse([cx - r_dot, cy_dot - r_dot, cx + r_dot, cy_dot + r_dot], fill=0)
+    for i, frac in enumerate((0.45, 0.72, 1.0)):
+        r = max(2, int(size * frac * 0.5))
+        bbox = [cx - r, cy_dot - r, cx + r, cy_dot + r]
+        draw.arc(bbox, start=205, end=335, fill=0, width=max(1, size // 12))
+
+
+STATION_COORDS_CACHE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".station_coords.json")
+
+
+def fetch_station_coords(station_id):
+    """Returns (lat, lng) for the configured NOAA station, used to compute
+    sunrise/sunset. Cached to disk and only re-fetched when the station ID
+    changes — coordinates never change for a given station, so there's no
+    reason to hit NOAA's metadata API every single refresh cycle."""
+    try:
+        with open(STATION_COORDS_CACHE_PATH) as f:
+            cached = json.load(f)
+        if cached.get("station_id") == station_id:
+            return cached["lat"], cached["lng"]
+    except (FileNotFoundError, KeyError, ValueError, json.JSONDecodeError):
+        pass
+
+    url = f"https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations/{station_id}.json"
+    resp = requests.get(url, timeout=10).json()
+    station = resp["stations"][0]
+    lat, lng = station["lat"], station["lng"]
+
+    with open(STATION_COORDS_CACHE_PATH, "w") as f:
+        json.dump({"station_id": station_id, "lat": lat, "lng": lng}, f)
+
+    return lat, lng
+
+
+def get_sun_times(lat, lng, for_date=None):
+    """Approximate local sunrise/sunset for a given date and location,
+    using the standard sunrise equation (the same one published in the
+    Almanac for Computers, 1990, US Naval Observatory — a well-known,
+    publicly documented algorithm, not something invented for this
+    project). Accurate to within a minute or two, which is plenty for
+    marking a spot on a small display; not precise enough for anything
+    safety-critical. Returns (sunrise, sunset) as local datetimes, or
+    (None, None) if the sun doesn't rise/set that day at that latitude
+    (polar regions only — never a real concern for a tide station)."""
+    if for_date is None:
+        for_date = datetime.now().date()
+    n = for_date.timetuple().tm_yday
+    lng_hour = lng / 15
+
+    def compute(is_sunrise):
+        t = n + ((6 - lng_hour) / 24 if is_sunrise else (18 - lng_hour) / 24)
+        m = (0.9856 * t) - 3.289
+        l = m + (1.916 * math.sin(math.radians(m))) + (0.020 * math.sin(math.radians(2 * m))) + 282.634
+        l = l % 360
+        ra = math.degrees(math.atan(0.91764 * math.tan(math.radians(l))))
+        ra = ra % 360
+        l_quadrant = math.floor(l / 90) * 90
+        ra_quadrant = math.floor(ra / 90) * 90
+        ra = (ra + (l_quadrant - ra_quadrant)) / 15
+        sin_dec = 0.39782 * math.sin(math.radians(l))
+        cos_dec = math.cos(math.asin(sin_dec))
+        cos_h = (math.cos(math.radians(90.833)) - (sin_dec * math.sin(math.radians(lat)))) / (
+            cos_dec * math.cos(math.radians(lat))
+        )
+        if cos_h > 1 or cos_h < -1:
+            return None  # sun never rises/sets this day at this latitude
+        h = (360 - math.degrees(math.acos(cos_h))) if is_sunrise else math.degrees(math.acos(cos_h))
+        h = h / 15
+        big_t = h + ra - (0.06571 * t) - 6.622
+        return (big_t - lng_hour) % 24
+
+    sunrise_ut = compute(True)
+    sunset_ut = compute(False)
+    if sunrise_ut is None or sunset_ut is None:
+        return None, None
+
+    base_utc = datetime(for_date.year, for_date.month, for_date.day)
+    sunrise_utc = base_utc + timedelta(hours=sunrise_ut)
+    sunset_utc = base_utc + timedelta(hours=sunset_ut)
+
+    # Convert UTC to local time using the system's own UTC offset, since
+    # tide_eink.py works in local time throughout (no timezone library
+    # dependency needed for this — the offset is just now-vs-utcnow).
+    #
+    # This requires the Pi's system clock to be set to the SAME timezone
+    # as the tide station's location — worth calling out explicitly,
+    # since a fresh Pi OS install often defaults to UTC. That said, this
+    # isn't a new requirement sunrise/sunset introduces: every existing
+    # time comparison in this file already silently depended on it too
+    # (NOAA returns predictions in the station's local time, and
+    # current_reading/next_events compare them directly against
+    # datetime.now()) — this just makes the dependency visible for the
+    # first time. If the display's clock ever looks off by a fixed
+    # number of hours, check timedatectl / sudo raspi-config →
+    # Localisation Options → Timezone on the Pi itself.
+    utc_offset = datetime.now() - datetime.utcnow()
+    return sunrise_utc + utc_offset, sunset_utc + utc_offset
+
+
+HOTSPOT_CONNECTION_NAME = "TideWatchHotspot"
+
+
+def render_hotspot_screen(ssid, pin, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT):
+    """Renders the fallback hotspot's current network name, password,
+    and the fixed address to visit once connected. Unlike
+    render_pin_screen (short-lived, self-expiring), this is meant to
+    stay up for as long as the hotspot itself is active — it's
+    literally the only way anyone could learn how to join the network
+    and reach the device at all, so it can't be a request-and-wait
+    overlay the way the login PIN is. The address is always
+    10.42.0.1 — NetworkManager's own default gateway for shared-mode
+    connections — which is only true because this function is only
+    ever called while the hotspot itself is the thing that's active;
+    it isn't a general-purpose "current IP" the way get_local_ip() is.
+    """
+    img = Image.new("1", (width, height), 255)
+    draw = ImageDraw.Draw(img)
+    pad = max(2, int(width * 0.03))
+
+    title = "Wi-Fi Setup Needed"
+    f_title = _fit_font(draw, title, FONT_BOLD, max(10, int(height * 0.10)), width - pad * 2)
+    title_bbox = draw.textbbox((0, 0), title, font=f_title)
+    draw.text((pad, pad), title, font=f_title, fill=0)
+    title_bottom = pad + (title_bbox[3] - title_bbox[1])
+
+    f_label = ImageFont.truetype(FONT_REGULAR, max(9, int(height * 0.065)))
+
+    # Reserve room for the URL line at the bottom FIRST, so the
+    # network/password block above is sized against what's actually
+    # left rather than assuming it has the full height to itself —
+    # the same fix an earlier version of the "Updated" stamp row
+    # needed for a different but related reason (see render_image).
+    url_text = "Visit: http://10.42.0.1:8080"
+    url_line_h = max(9, int(height * 0.09))
+    f_url = _fit_font(draw, url_text, FONT_MONO, url_line_h, width - pad * 2)
+    url_y = height - pad - url_line_h
+
+    net_label_y = title_bottom + int(height * 0.03)
+    draw.text((pad, net_label_y), "Network:", font=f_label, fill=0)
+    net_label_bbox = draw.textbbox((pad, net_label_y), "Network:", font=f_label)
+
+    ssid_y = net_label_bbox[3] + int(height * 0.01)
+    f_ssid = _fit_font(draw, ssid, FONT_BOLD, max(10, int(height * 0.09)), width - pad * 2)
+    draw.text((pad, ssid_y), ssid, font=f_ssid, fill=0)
+    ssid_bbox = draw.textbbox((pad, ssid_y), ssid, font=f_ssid)
+
+    pass_label_y = ssid_bbox[3] + int(height * 0.03)
+    draw.text((pad, pass_label_y), "Password:", font=f_label, fill=0)
+    pass_label_bbox = draw.textbbox((pad, pass_label_y), "Password:", font=f_label)
+
+    pin_y = pass_label_bbox[3] + int(height * 0.01)
+    max_pin_height = url_y - pin_y - int(height * 0.02)
+    f_pin = _fit_font_both(draw, pin, FONT_MONO, max(10, int(height * 0.16)), width - pad * 2, max_pin_height)
+    draw.text((pad, pin_y), pin, font=f_pin, fill=0)
+
+    draw.text((pad, url_y), url_text, font=f_url, fill=0)
+
+    if FLIP180:
+        img = img.transpose(Image.ROTATE_180)
+
+    return img
+
+
+def get_local_ip():
+    """Best-effort local IP address, shown on the PIN screen as a
+    fallback in case .local (mDNS) resolution doesn't work on whatever
+    device someone's trying to log in from — a real gap found and fixed
+    in a sibling project's PIN screens. Opening a UDP socket to a public
+    address doesn't actually send any traffic; it just prompts the OS to
+    pick which local interface it would route through.
+
+    If the Wi-Fi fallback hotspot is currently active, that trick can't
+    work at all — there's no real internet route while acting as an
+    access point rather than a client — so this checks for that first
+    and reports the hotspot's known fixed address (10.42.0.1,
+    NetworkManager's own default for shared-mode connections) directly."""
+    try:
+        result = subprocess.run(
+            ["nmcli", "-t", "-f", "TYPE,STATE,NAME", "connection", "show", "--active"],
+            capture_output=True, text=True, timeout=5,
+        )
+        for line in result.stdout.splitlines():
+            parts = line.split(":")
+            if len(parts) >= 3 and parts[0] == "802-11-wireless" and parts[1] == "activated" and parts[2] == HOTSPOT_CONNECTION_NAME:
+                return "10.42.0.1"
+    except Exception:
+        pass
+
+    try:
+        s = _socket.socket(_socket.AF_INET, _socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except OSError:
+        return None
+
+
+def render_pin_screen(pin, expires_at, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT):
+    """Renders the one-time login PIN for the web config page. Kept
+    deliberately simple — no fetched tide data, no battery block — since
+    it's a short-lived overlay, not the normal display state."""
+    img = Image.new("1", (width, height), 255)
+    draw = ImageDraw.Draw(img)
+    pad = max(2, int(width * 0.03))
+
+    title = "Config Access Requested"
+    f_title = _fit_font(draw, title, FONT_BOLD, max(10, int(height * 0.10)), width - pad * 2)
+    title_bbox = draw.textbbox((0, 0), title, font=f_title)
+    draw.text((pad, pad), title, font=f_title, fill=0)
+    title_bottom = pad + (title_bbox[3] - title_bbox[1])
+
+    pin_y = title_bottom + int(height * 0.06)
+    f_pin = _fit_font(draw, pin, FONT_BOLD, int(height * 0.34), width - pad * 2)
+    draw.text((pad, pin_y), pin, font=f_pin, fill=0)
+    pin_bbox = draw.textbbox((pad, pin_y), pin, font=f_pin)
+    pin_bottom = pin_bbox[3]
+
+    f_small = ImageFont.truetype(FONT_REGULAR, max(9, int(height * 0.075)))
+    expiry_text = "Expires " + expires_at.strftime("%-I:%M:%S %p")
+    expiry_y = pin_bottom + int(height * 0.04)
+    draw.text((pad, expiry_y), expiry_text, font=f_small, fill=0)
+
+    hostname = _socket.gethostname()
+    ip = get_local_ip()
+    line1 = f"Visit: {hostname}.local:8080"
+    line2 = f"or: http://{ip}:8080" if ip else "(local IP unavailable)"
+    line_h = int(height * 0.08)
+    f_url = _fit_font(draw, max(line1, line2, key=len), FONT_MONO, max(9, int(height * 0.075)), width - pad * 2)
+    url_y2 = height - pad - line_h
+    url_y1 = url_y2 - line_h
+    draw.text((pad, url_y1), line1, font=f_url, fill=0)
+    draw.text((pad, url_y2), line2, font=f_url, fill=0)
+
+    if FLIP180:
+        img = img.transpose(Image.ROTATE_180)
+
+    return img
+
+
+def _draw_sun_graphic(draw, curve_left, curve_top, curve_bottom, curve_right, sunrise, sunset):
+    """Draws a dome-shaped arc from sunrise to sunset with a marker at
+    the sun's current position along it — an alternative to the tide
+    curve occupying the same region, not something shown alongside it
+    (see render_image's "combined" mode below for when it *is* shown
+    alongside the curve, stacked above it).
+
+    All internal proportions (marker size, label font) scale off the
+    region actually given (curve_bottom - curve_top), not a separate
+    full-panel-height parameter — an earlier version sized off the
+    full panel regardless of how much of it this function actually got
+    to work with, which looked fine when it was always given the
+    normal full-size bottom region, but produced oversized labels that
+    overflowed into whatever was drawn below once it started getting
+    called with a deliberately compact region instead (confirmed by
+    rendering). Self-contained sizing means it always looks right for
+    whatever space it's actually handed, standalone or not.
+
+    The ellipse's bbox is built from its center and radii directly
+    (center=(cx,cy), radii=(rx,ry)) rather than guessing a bbox and
+    hoping the arc lands where expected. A first version assumed the
+    arc's endpoints (180°/360°) would sit at the bbox's bottom edge,
+    but they actually sit at the ellipse's *center* — that mismatch
+    made the bbox taller than intended and pushed the peak above
+    curve_top, overlapping the row above it. Confirmed by rendering.
+
+    The marker is only drawn during actual daylight hours. An earlier
+    version clamped it to the arc's endpoints outside that window to
+    represent "the sun is down," but that put it directly on top of the
+    time labels below — also confirmed by rendering, a real overlap,
+    not just a close call. Simply omitting it outside daylight hours
+    reads just as clearly and avoids the collision entirely.
+
+    Returns the actual measured bottom-most y-coordinate drawn to (the
+    labels extend below curve_bottom by their own height) — callers
+    that need to position something below this graphic use that
+    directly rather than separately predicting how tall the labels
+    will end up. A second formula trying to guess that height is
+    exactly how it drifted out of sync and started overlapping a
+    caller's own content below it in the first place.
+    """
+    cx = (curve_left + curve_right) / 2
+    cy = curve_bottom
+    rx = (curve_right - curve_left) / 2
+    ry = curve_bottom - curve_top
+
+    bbox = [curve_left, cy - ry, curve_right, cy + ry]
+    draw.arc(bbox, start=180, end=360, fill=0, width=2)
+    draw.line([(curve_left, curve_bottom), (curve_right, curve_bottom)], fill=0, width=1)
+
+    now = datetime.now()
+    if sunrise <= now <= sunset:
+        day_len = (sunset - sunrise).total_seconds()
+        frac = (now - sunrise).total_seconds() / day_len if day_len else 0.5
+        frac = max(0.0, min(1.0, frac))
+        angle_rad = math.radians(180 + frac * 180)
+        sun_x = cx + rx * math.cos(angle_rad)
+        sun_y = cy + ry * math.sin(angle_rad)
+        r = max(3, int(ry * 0.30))
+        draw.ellipse([sun_x - r, sun_y - r, sun_x + r, sun_y + r], fill=0)
+
+    f_label = ImageFont.truetype(FONT_MONO, max(8, int(ry * 0.45)))
+    sunrise_text = sunrise.strftime("%-I:%M %p")
+    sunset_text = sunset.strftime("%-I:%M %p")
+    label_y = curve_bottom + 2
+
+    draw.text((curve_left, label_y), sunrise_text, font=f_label, fill=0)
+    sunrise_bbox = draw.textbbox((curve_left, label_y), sunrise_text, font=f_label)
+
+    sunset_w_bbox = draw.textbbox((0, 0), sunset_text, font=f_label)
+    sunset_w = sunset_w_bbox[2] - sunset_w_bbox[0]
+    draw.text((curve_right - sunset_w, label_y), sunset_text, font=f_label, fill=0)
+    sunset_bbox = draw.textbbox((curve_right - sunset_w, label_y), sunset_text, font=f_label)
+
+    return max(sunrise_bbox[3], sunset_bbox[3])
+
+
+def _draw_tide_curve(draw, curve, value, curve_left, curve_top, curve_bottom, curve_right, sun_times, height, draw_sun_ticks):
+    """Draws the tide curve, current-position marker, and baseline
+    within the given region. Factored out so both the tide-curve-only
+    display mode and the combined (sun graphic + curve) mode can share
+    it, rather than keeping two copies of the same drawing logic that
+    could quietly drift apart from each other over time. draw_sun_ticks
+    is False in combined mode — the sun graphic sitting right above
+    already shows sunrise/sunset directly, so repeating it as ticks
+    here would just be redundant clutter, not add information."""
+    values = [p["value"] for p in curve]
+    vmin, vmax = min(values), max(values)
+    vrange = (vmax - vmin) or 1
+    t0 = curve[0]["time"].timestamp()
+    t1 = curve[-1]["time"].timestamp()
+    tspan = (t1 - t0) or 1
+
+    def px(t):
+        return curve_left + (t.timestamp() - t0) / tspan * (curve_right - curve_left)
+
+    def py(v):
+        return curve_top + (1 - (v - vmin) / vrange) * (curve_bottom - curve_top)
+
+    points = [(px(p["time"]), py(p["value"])) for p in curve]
+    draw.line(points, fill=0, width=2)
+
+    # marker for "now" on the curve
+    now_x = px(datetime.now())
+    now_x = min(max(now_x, curve_left), curve_right)
+    now_y = py(value)
+    r = 3
+    draw.ellipse([now_x - r, now_y - r, now_x + r, now_y + r], outline=0, fill=255, width=2)
+
+    # baseline
+    draw.line([(curve_left, curve_bottom), (curve_right, curve_bottom)], fill=0, width=1)
+
+    # sunrise/sunset ticks — short marks rising from the baseline at
+    # their x-position in today's timeline, using the same px() mapping
+    # the curve itself is plotted with. Only drawn if they fall within
+    # the plotted window (they always should for a same-day curve, but
+    # this guards against an edge case rather than assuming it).
+    #
+    # A compact time label sits below each tick, in the margin below
+    # curve_bottom. Sized against the actual measured room available
+    # there (via _fit_font_height) rather than an assumed fraction of
+    # panel height — the margin below curve_bottom is only ever a few
+    # pixels on the smallest panels, so guessing a size risked exactly
+    # the kind of overflow this project has hit (and fixed) more than
+    # once already. If there's genuinely not enough room for even the
+    # smallest legible size, the labels are skipped entirely rather
+    # than forcing something illegible — the ticks themselves still
+    # show where sunrise/sunset fall, just without the exact time.
+    if draw_sun_ticks and sun_times:
+        tick_h = max(3, int(height * 0.04))
+        bottom_pad = max(2, int(height * 0.02))
+        available_below = height - curve_bottom - 2 - bottom_pad
+        f_tick_label = None
+        if available_below >= 11:
+            f_tick_label = _fit_font_to_bottom_edge(draw, "12:00p", FONT_MONO, max(9, int(height * 0.08)), available_below, min_size=9)
+
+        for t in sun_times:
+            if t is not None and t0 <= t.timestamp() <= t1:
+                tx = px(t)
+                draw.line([(tx, curve_bottom), (tx, curve_bottom - tick_h)], fill=0, width=1)
+
+                if f_tick_label is not None:
+                    label = t.strftime("%-I:%M") + ("a" if t.hour < 12 else "p")
+                    label_bbox = draw.textbbox((0, 0), label, font=f_tick_label)
+                    label_w = label_bbox[2] - label_bbox[0]
+                    label_x = tx - label_w / 2
+                    label_x = max(curve_left, min(label_x, curve_right - label_w))
+                    draw.text((label_x, curve_bottom + 2), label, font=f_tick_label, fill=0)
+
+
+def render_image(hilo, curve, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, battery=None, sun_times=None):
+    img = Image.new("1", (width, height), 255)  # 1-bit, white background
+    draw = ImageDraw.Draw(img)
+
+    f_small = ImageFont.truetype(FONT_REGULAR, max(9, int(height * 0.09)))
+
+    value, rising = current_reading(curve)
+    next_high, next_low = next_events(hilo)
+
+    pad = max(2, int(width * 0.02))
+
+    # The reading (left) and next high/low (right) sit side by side.
+    # col_split is where they're allotted to divide the width; each side's
+    # font is then fit to actually stay within its half, rather than just
+    # trusting a height-based percentage to happen to fit (that assumption
+    # breaks the moment the panel's aspect ratio changes — see _fit_font).
+    col_split = int(width * 0.56)
+    left_max_width = col_split - pad * 2
+    right_max_width = width - pad - col_split
+
+    # --- header: title (left) + battery (optional, right) share this row.
+    # The last-updated stamp used to live here too, but that crowded three
+    # things onto one row — on wide panels the stamp ended up touching
+    # the "Next Low" text below with zero margin, and on narrower panels
+    # it forced the title down to an inconsistently tiny size next to
+    # full-size text elsewhere. It's now placed separately, in the open
+    # gap above the curve, where it has the whole width to itself. ---
+    battery_width = 0
+    battery_gap = max(2, int(width * 0.02))
+    if battery is not None:
+        percent, _charging = battery
+        battery_width = _battery_block_width(draw, percent, f_small, height)
+
+    reserved_right = battery_width + battery_gap if battery is not None else 0
+    title_max_width = width - pad * 2 - reserved_right - int(width * 0.03)
+    f_title = _fit_font(draw, STATION_LABEL, FONT_BOLD, max(10, int(height * 0.10)), title_max_width)
+    draw.text((pad, 0), STATION_LABEL, font=f_title, fill=0)
+
+    if battery is not None:
+        percent, charging = battery
+        battery_x_right = width - pad
+        battery_y_center = f_small.size // 2
+        _draw_battery_block(draw, battery_x_right, battery_y_center, percent, charging, f_small, height)
+
+    # --- big current reading, top-left under header ---
+    reading_text = f"{value:.1f} ft"
+    f_big = _fit_font(draw, reading_text, FONT_BOLD, int(height * 0.30), left_max_width)
+    reading_y = int(height * 0.16)
+    draw.text((pad, reading_y), reading_text, font=f_big, fill=0)
+
+    # rising/falling indicator, drawn as a simple triangle + label
+    arrow_x = pad
+    arrow_y = reading_y + int(height * 0.34)
+    tri_size = max(6, int(height * 0.08))
+    if rising:
+        draw.polygon(
+            [(arrow_x, arrow_y + tri_size), (arrow_x + tri_size, arrow_y + tri_size), (arrow_x + tri_size // 2, arrow_y)],
+            fill=0,
+        )
+        state_label = "Rising"
+    else:
+        draw.polygon(
+            [(arrow_x, arrow_y), (arrow_x + tri_size, arrow_y), (arrow_x + tri_size // 2, arrow_y + tri_size)],
+            fill=0,
+        )
+        state_label = "Falling"
+    state_x = arrow_x + tri_size + pad
+    draw.text((state_x, arrow_y - 2), state_label, font=f_small, fill=0)
+    state_bbox = draw.textbbox((state_x, arrow_y - 2), state_label, font=f_small)
+    state_right = state_bbox[2]
+
+    # wifi status, sharing the rising/falling row rather than its own —
+    # bounded by left_max_width horizontally (the same boundary the big
+    # reading number is fit against) AND by this row's own established
+    # height vertically. Both matter: fitting only against width let the
+    # font grow tall enough at some aspect ratios to extend this row down
+    # far enough to collide with the "Updated" row below it — which is
+    # positioned independently, based on the right column's height, with
+    # no awareness of how tall the left column's own rows happen to be.
+    state_height = state_bbox[3] - state_bbox[1]
+    ip = get_local_ip()
+    ip_suffix = ip.rsplit(".", 1)[-1] if ip else "?"
+    wifi_text = "." + ip_suffix
+    wifi_gap = max(4, int(width * 0.02))
+    icon_size = max(8, min(int(height * 0.07), state_height))
+    left_edge_limit = pad + left_max_width
+    available_wifi_width = left_edge_limit - (state_right + wifi_gap + icon_size + 3)
+    f_wifi = _fit_font_both(draw, wifi_text, FONT_MONO, max(9, int(height * 0.08)), max(available_wifi_width, 1), state_height)
+    icon_x = state_right + wifi_gap
+    icon_y = arrow_y - 2 + (state_height - icon_size) // 2
+    _draw_wifi_icon(draw, icon_x, icon_y, icon_size)
+    draw.text((icon_x + icon_size + 3, arrow_y - 2), wifi_text, font=f_wifi, fill=0)
+
+    # Shared boundary: where the curve begins. Used both to bound how far
+    # down the text above it is allowed to extend, and to actually plot
+    # the curve — these must be the same value, not two separately-named
+    # constants that happen to match today. Two of those silently
+    # drifting apart is exactly how the curve region and the text above
+    # it could end up overlapping without either one "looking wrong" in
+    # isolation. Set higher than the text-only version of this fit
+    # needed, specifically to leave real, comfortable margin for the
+    # wifi/stamp row now sharing space with the next-high/low block
+    # above it — the text row was hitting its absolute minimum font size
+    # and still not fitting reliably on the smallest panel before this.
+    #
+    # Combined mode (sun graphic stacked above the tide curve) needs
+    # real, absolute pixel room to keep both halves legible — splitting
+    # the *normal* bottom region in half would make each piece too
+    # small on any panel. Widening this boundary only when combined
+    # mode is actually configured, and only above a minimum panel
+    # height, leaves tide_curve/sun_graphic mode's existing (already
+    # tested) proportions completely untouched on every other
+    # configuration. The widening is based on what's *configured*
+    # rather than on whether today's sunrise/sunset fetch happened to
+    # succeed, so the layout doesn't shift size cycle to cycle — on a
+    # fetch-failure day this just means the tide-curve fallback ends up
+    # a bit larger than the normal tide_curve mode's curve, which is a
+    # harmless bonus, not a defect.
+    #
+    # 150 rather than a rounder number: confirmed by actually rendering
+    # (not assumed) that the 2.7" panel (176px tall, squarer aspect
+    # ratio than the 2.13"/2.9" panels) renders combined mode cleanly —
+    # legible labels, real positive gaps everywhere — despite being far
+    # shorter than the 4.2"/7.5" panels this was originally tuned
+    # against. 150 sits comfortably between that confirmed-working
+    # case and the 2.9" panel (128px), which does not have enough room.
+    MIN_COMBINED_PANEL_HEIGHT = 150
+    want_combined = DISPLAY_MODE == "combined" and height >= MIN_COMBINED_PANEL_HEIGHT
+    CURVE_TOP_FRACTION = 0.60 if want_combined else 0.74
+
+    # --- next high/low, right-aligned to the panel's right edge ---
+    # Font size is chosen with a guaranteed minimum gap to the row below
+    # in mind, computed (not drawn) first: an earlier version fit this
+    # purely against available width, independent of how much vertical
+    # room it left the wifi/stamp row underneath it — which worked with
+    # some next-high/low text lengths and silently overlapped with
+    # others, since the "safe" gap was actually just lucky with whatever
+    # specific times/heights happened to be tested. Shrinking this
+    # block's own font first, before drawing anything, guarantees the
+    # row below always has enough room instead of hoping it does.
+    right_edge = width - pad
+    high_line = f"{next_high['time'].strftime('%-I:%M %p')}  {next_high['value']:.1f}ft" if next_high else ""
+    low_line = f"{next_low['time'].strftime('%-I:%M %p')}  {next_low['value']:.1f}ft" if next_low else ""
+    longest_value_line = max([high_line, low_line], key=len) or "0:00 AM  0.0ft"
+
+    line_h = int(height * 0.10)
+    ny = int(height * 0.16)
+    margin = max(2, int(height * 0.015))
+    curve_top_for_stamp = int(height * CURVE_TOP_FRACTION)
+    min_safe_gap = max(14, int(height * 0.10))
+
+    right_max_font_size = max(9, int(height * 0.09))
+    while True:
+        f_mono = _fit_font(draw, longest_value_line, FONT_MONO, right_max_font_size, right_max_width)
+        f_label = _fit_font(draw, "Next High", FONT_REGULAR, right_max_font_size, right_max_width)
+
+        right_column_bottom = ny
+        if next_high:
+            bbox = draw.textbbox((0, ny + line_h), high_line, font=f_mono)
+            right_column_bottom = max(right_column_bottom, bbox[3])
+        if next_low:
+            bbox = draw.textbbox((0, ny + line_h * 3 + 2), low_line, font=f_mono)
+            right_column_bottom = max(right_column_bottom, bbox[3])
+
+        available_height = curve_top_for_stamp - right_column_bottom - margin * 2
+        if available_height >= min_safe_gap or right_max_font_size <= 9:
+            break
+        right_max_font_size -= 1
+
+    if next_high:
+        _draw_right_aligned(draw, right_edge, ny, "Next High", f_label)
+        _draw_right_aligned(draw, right_edge, ny + line_h, high_line, f_mono)
+    if next_low:
+        _draw_right_aligned(draw, right_edge, ny + line_h * 2 + 2, "Next Low", f_label)
+        _draw_right_aligned(draw, right_edge, ny + line_h * 3 + 2, low_line, f_mono)
+
+    # --- last-updated stamp, placed in the gap between the bottom of the
+    # next-high/low block and the curve. Both boundaries are measured
+    # (right_column_bottom above, curve_top below) rather than guessed —
+    # an earlier attempt at this positioned the stamp from curve_top
+    # alone and it ended up touching the Next Low text from below with
+    # zero margin; fixing that by adding margin from curve_top alone
+    # then made it touch Next Low from below instead. Sizing the font to
+    # the actual available gap avoids both. Still labeled "Updated"
+    # rather than a bare time, so it can't be mistaken for a live clock.
+    row_y = right_column_bottom + margin
+    stamp = "Updated " + datetime.now().strftime("%-I:%M %p")
+    # Constrained by BOTH available_height and right_max_width — not just
+    # height. Height-only fitting let the stamp grow wide enough (since
+    # there was no width competitor after wifi moved off this row) to
+    # cross col_split into the left column's territory, colliding with
+    # whatever sits there — confirmed by rendering: this is exactly how
+    # the wifi/Falling row and this one ended up overlapping, even though
+    # neither one's own sizing was actually the problem.
+    f_stamp = _fit_font_both(draw, stamp, FONT_REGULAR, max(9, int(height * 0.09)), right_max_width, max(available_height, 1))
+    _draw_right_aligned(draw, width - pad, row_y, stamp, f_stamp)
+
+    # --- bottom region: tide curve, sunrise/sunset graphic, or both
+    # stacked together, depending on display_mode — falls back toward
+    # the tide curve whenever sun times aren't available (a fetch
+    # failure) rather than leaving any part of the region blank.
+    curve_top = int(height * CURVE_TOP_FRACTION)
+    curve_left = pad
+    curve_right = width - pad
+
+    use_combined = want_combined and sun_times and sun_times[0] and sun_times[1]
+    use_sun_graphic = DISPLAY_MODE == "sun_graphic" and sun_times and sun_times[0] and sun_times[1]
+
+    # Plain tide-curve mode reserves a smaller bottom margin than the
+    # other two modes when it needs room for sunrise/sunset TIME LABELS
+    # beneath the ticks — freeing a few more pixels specifically for
+    # that, without touching the margin sun_graphic/combined mode's own
+    # (differently-sized, already-tested) labels rely on. Shrinking the
+    # shared margin for everyone risked silently breaking those, since
+    # their label sizing doesn't itself check how much room is actually
+    # available below curve_bottom the way this feature does.
+    plain_tide_curve = not use_combined and not use_sun_graphic
+    bottom_margin_fraction = 0.16 if (plain_tide_curve and SHOW_SUN_TIMES and sun_times) else 0.10
+    curve_bottom = height - int(height * bottom_margin_fraction)
+
+    if use_combined:
+        # Sun graphic occupies a compact strip at the top of the
+        # (widened) region, tide curve fills the rest below it. The
+        # split favors the curve (62%) over the sun strip (38%) since
+        # the curve carries more visual detail and needs more room to
+        # stay readable; the sun graphic's own content (arc, one
+        # marker, two time labels) stays legible even compact. The gap
+        # before the curve starts is based on _draw_sun_graphic's own
+        # measured return value, not a separately guessed height for
+        # its labels — see that function's docstring for why guessing
+        # it a second time here is exactly what caused a real overlap.
+        region_h = curve_bottom - curve_top
+        sun_bottom = curve_top + int(region_h * 0.38)
+        sun_graphic_bottom = _draw_sun_graphic(draw, curve_left, curve_top, sun_bottom, curve_right, sun_times[0], sun_times[1])
+        gap = max(2, int(region_h * 0.02))
+        curve_region_top = sun_graphic_bottom + gap
+
+        _draw_tide_curve(draw, curve, value, curve_left, curve_region_top, curve_bottom, curve_right, sun_times, height, draw_sun_ticks=False)
+    elif use_sun_graphic:
+        _draw_sun_graphic(draw, curve_left, curve_top, curve_bottom, curve_right, sun_times[0], sun_times[1])
+    else:
+        _draw_tide_curve(draw, curve, value, curve_left, curve_top, curve_bottom, curve_right, sun_times, height, draw_sun_ticks=True)
+
+    if FLIP180:
+        img = img.transpose(Image.ROTATE_180)
+
+    return img
+
+
+# ----------------------------------------------------------------------
+# HARDWARE - the ONLY function you need to swap for your specific panel
+# ----------------------------------------------------------------------
+
+_epd = None  # cached driver handle, initialized once
+
+
+def display_image(img):
+    """
+    Push a rendered PIL Image to the e-ink panel.
+
+    Uses Waveshare's official Python library, picking the driver module
+    named by CONFIG["display_driver"] (set via config.json — the Tide
+    Watch Configurator writes this for you based on the panel you pick).
+    If display_driver is empty/unrecognized, falls back to just saving
+    a preview PNG so the script still runs before hardware is wired up.
+
+    Each Waveshare driver module exposes roughly the same API (init,
+    display, getbuffer, sleep), but Clear() signatures differ between
+    v1 and v2+ variants, hence the try/except below.
+    """
+    global _epd
+
+    if not DISPLAY_DRIVER:
+        img.save(CACHE_PATH)
+        print(f"[display_image] No driver configured — saved preview to {CACHE_PATH}")
+        return
+
+    try:
+        if _epd is None:
+            driver = __import__(f"waveshare_epd.{DISPLAY_DRIVER}", fromlist=[DISPLAY_DRIVER])
+            _epd = driver.EPD()
+            _epd.init()
+        try:
+            _epd.Clear(0xFF)
+        except TypeError:
+            _epd.Clear()  # some v2+ drivers take no arguments
+        _epd.display(_epd.getbuffer(img))
+        try:
+            _epd.displayPartBaseImage(_epd.getbuffer(img))
+        except AttributeError:
+            pass  # not all drivers support partial-refresh baselines
+        _epd.sleep()
+    except ModuleNotFoundError:
+        img.save(CACHE_PATH)
+        print(
+            f"[display_image] waveshare_epd.{DISPLAY_DRIVER} not installed yet "
+            f"— saved preview to {CACHE_PATH} instead. See README for driver setup."
+        )
+
+
+# ----------------------------------------------------------------------
+# MAIN LOOP
+# ----------------------------------------------------------------------
+
+def get_todays_sun_times():
+    """Best-effort sunrise/sunset for today, or None if anything about
+    getting there fails — a network hiccup fetching station coordinates,
+    or the coordinates being unavailable, should never block the actual
+    tide display from updating. This is a nice-to-have overlay, not
+    something the rest of the display depends on."""
+    try:
+        lat, lng = fetch_station_coords(STATION_ID)
+        return get_sun_times(lat, lng)
+    except Exception:
+        return None
+
+
+def run_once():
+    hilo, curve = fetch_tide_data()
+    battery = get_battery_status() if PISUGAR_ENABLED else None
+    need_sun_times = SHOW_SUN_TIMES or DISPLAY_MODE in ("sun_graphic", "combined")
+    sun_times = get_todays_sun_times() if need_sun_times else None
+    img = render_image(hilo, curve, battery=battery, sun_times=sun_times)
+    display_image(img)
+    img.save(CACHE_PATH)  # keep a copy for the failure fallback below
+
+
+def _load_pin_request():
+    """Returns (pin, expires_at) for a pending, still-valid PIN request,
+    or (None, None) if there isn't one. A missing or malformed file just
+    means no PIN is currently being requested — never an error."""
+    try:
+        with open(PIN_REQUEST_PATH) as f:
+            data = json.load(f)
+        return data["pin"], datetime.fromtimestamp(data["expires_at"])
+    except (FileNotFoundError, KeyError, ValueError, json.JSONDecodeError):
+        return None, None
+
+
+def _pin_request_active():
+    pin, expires_at = _load_pin_request()
+    return bool(pin and expires_at and datetime.now() < expires_at)
+
+
+def _load_hotspot_info():
+    """Returns the hotspot's current network name/password dict if the
+    fallback hotspot is active, or None if it isn't. A missing or
+    malformed file just means the hotspot isn't currently up — never
+    an error."""
+    try:
+        with open(HOTSPOT_INFO_PATH) as f:
+            return json.load(f)
+    except (FileNotFoundError, ValueError, json.JSONDecodeError):
+        return None
+
+
+def _overlay_active():
+    """True if either the login PIN or the hotspot info screen should
+    currently be occupying the display — used to skip the scheduled
+    tide refresh while either one is up. For the hotspot case this
+    also avoids a guaranteed-to-fail NOAA fetch every cycle: if the
+    fallback hotspot is active, there's no real network to reach NOAA
+    with in the first place."""
+    return _pin_request_active() or _load_hotspot_info() is not None
+
+
+def _check_overlays(shown):
+    """Draws or reverts the login PIN screen and the hotspot info
+    screen as needed, in that priority order. "shown" is a single
+    tuple representing exactly what's currently on the physical
+    screen — ("pin", pin_value), ("hotspot", (ssid, pin)), or
+    (None, None) for the normal tide display — rather than two
+    separately-tracked booleans. Two independent trackers can drift
+    out of sync with each other and with what's actually rendered:
+    confirmed by testing, tracking pin/hotspot state separately let
+    the PIN screen correctly take over from the hotspot screen, but
+    then failed to redraw the hotspot screen when reverting back to
+    it, because the (unchanged, still "matching") hotspot tracker
+    made that look like a no-op. A single source of truth for "what's
+    actually on screen right now" can't develop that kind of gap.
+
+    The login PIN — a short-lived thing someone's actively waiting on
+    right now — takes over the display even if the hotspot screen was
+    already showing, and reverting from it goes back to the hotspot
+    screen (if the hotspot is still active) rather than jumping
+    straight to the tide display, since the hotspot being up is still
+    the relevant thing to show in that case. Expiry/state is read
+    fresh from disk each call and enforced by this process's own
+    clock, not by trusting a signal from whatever wrote the file — so
+    neither screen can get stuck up forever if the process that
+    requested it crashes or restarts. Returns the updated "shown".
+    """
+    pin, expires_at = _load_pin_request()
+    pin_active = bool(pin and expires_at and datetime.now() < expires_at)
+
+    if pin_active:
+        if shown != ("pin", pin):
+            print(f"Showing login PIN on display (expires {expires_at.strftime('%-I:%M:%S %p')})")
+            display_image(render_pin_screen(pin, expires_at))
+        return ("pin", pin)
+
+    if shown[0] == "pin":
+        # the login PIN we were showing just expired or got used
+        try:
+            os.remove(PIN_REQUEST_PATH)
+        except FileNotFoundError:
+            pass
+        shown = (None, None)
+        # falls through below to the hotspot screen (if still active)
+        # or the normal tide display, rather than returning early —
+        # and forces a fresh redraw either way, since (None, None)
+        # can't accidentally match a still-active hotspot's key
+
+    hotspot_info = _load_hotspot_info()
+    if hotspot_info:
+        key = (hotspot_info.get("ssid"), hotspot_info.get("pin"))
+        if shown != ("hotspot", key):
+            print(f"Showing hotspot Wi-Fi info on display (ssid={hotspot_info.get('ssid')!r})")
+            display_image(render_hotspot_screen(hotspot_info.get("ssid", ""), hotspot_info.get("pin", "")))
+        return ("hotspot", key)
+
+    if shown != (None, None):
+        print("Reverting to last tide reading")
+        try:
+            stale = Image.open(CACHE_PATH)
+            display_image(stale)
+        except FileNotFoundError:
+            pass
+        return (None, None)
+
+    return shown
+
+
+def main():
+    shown = (None, None)
+    while True:
+        # Skip the scheduled tide refresh while either overlay is
+        # active, so it doesn't get overwritten mid-login (or waste a
+        # cycle on a NOAA fetch that can't succeed while the hotspot's
+        # up anyway) by an unrelated refresh landing at the same moment.
+        if not _overlay_active():
+            try:
+                run_once()
+            except Exception:
+                print("Error updating tide display, will retry next cycle:")
+                traceback.print_exc()
+                # Fall back to whatever was last successfully rendered
+                # rather than leaving the panel blank or crashing.
+                try:
+                    stale = Image.open(CACHE_PATH)
+                    display_image(stale)
+                except FileNotFoundError:
+                    pass
+
+        # Sleep in short increments rather than one long call, so a
+        # settings change (RELOAD_TRIGGER_PATH), a login PIN request
+        # (PIN_REQUEST_PATH), or the hotspot activating/deactivating
+        # (HOTSPOT_INFO_PATH) all take effect within a few seconds
+        # instead of waiting up to a full refresh interval.
+        total_sleep = REFRESH_INTERVAL_MINUTES * 60
+        slept = 0
+        poll_seconds = 5
+        while slept < total_sleep:
+            if os.path.exists(RELOAD_TRIGGER_PATH):
+                try:
+                    os.remove(RELOAD_TRIGGER_PATH)
+                except FileNotFoundError:
+                    pass
+                print("Settings changed — restarting to pick up new config.json")
+                sys.exit(0)
+            shown = _check_overlays(shown)
+            time.sleep(min(poll_seconds, total_sleep - slept))
+            slept += poll_seconds
+
+
+if __name__ == "__main__":
+    main()
+`;
+
+const CONFIG_SERVER_PY = String.raw`#!/usr/bin/env python3
+"""
+Tide Watch web config page.
+
+Lets you change settings (station, refresh interval, flip, PiSugar) from
+a browser instead of SSH. Runs as its own small process, entirely
+separate from tide_eink.py itself — and deliberately never imports the
+Waveshare driver or touches GPIO/SPI in any way. It only ever reads and
+writes config.json, and drops small request files that tide_eink.py's
+own process polls for and acts on. That file-based handoff is the whole
+interface between the two processes, on purpose: two processes both
+holding the EPD driver open at once is a real, previously-hit bug in a
+sibling project (GPIO/SPI pins can only be claimed by one process at a
+time), and this design makes that class of bug structurally impossible
+here rather than something to remember not to do.
+
+Login works by PIN, but not a fixed one: clicking "Show PIN on display"
+generates a fresh, random, single-use PIN and asks tide_eink.py to draw
+it on the physical e-ink panel — so logging in requires being able to
+see the actual device, not just knowing a password that might be
+sitting in a file somewhere. The PIN is burned the moment it's used
+successfully, and expires on its own after a few minutes either way.
+That expiry is enforced by tide_eink.py's own clock, not by this
+process — a login PIN that could only be dismissed by this server
+staying alive was a real bug in a sibling project's first version of
+this same idea; a crashed or restarted web server should never be able
+to leave a PIN stuck on the display forever.
+"""
+
+import http.server
+import json
+import os
+import secrets
+import socketserver
+import subprocess
+import threading
+import time
+from http import cookies
+from urllib.parse import parse_qs, quote, urlparse
+
+import requests
+
+INSTALL_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG_PATH = os.path.join(INSTALL_DIR, "config.json")
+RELOAD_TRIGGER_PATH = os.path.join(INSTALL_DIR, ".reload_trigger")
+PIN_REQUEST_PATH = os.path.join(INSTALL_DIR, ".pin_request.json")
+PORT = 8080
+
+SESSION_TTL_SECONDS = 30 * 60
+MAX_LOGIN_ATTEMPTS = 5
+LOCKOUT_SECONDS = 5 * 60
+PIN_TTL_SECONDS = 5 * 60
+
+# In-memory only — resets if the service restarts, which just means
+# everyone has to log in (and request a fresh PIN) again. Fine for a
+# single-household device.
+_sessions = {}  # token -> expiry_timestamp
+_failed_attempts = []  # timestamps of recent failed logins
+_pin_lock = threading.Lock()  # guards PIN generation — see request_pin()
+
+
+def _load_config():
+    with open(CONFIG_PATH) as f:
+        return json.load(f)
+
+
+def _save_config(cfg):
+    with open(CONFIG_PATH, "w") as f:
+        json.dump(cfg, f, indent=2)
+
+
+def _add_wifi_network(ssid, password):
+    """Saves a new Wi-Fi network via NetworkManager. Deliberately does
+    NOT bring the connection up itself — that's left entirely to
+    hotspot_monitor.sh's own periodic check (already running every
+    couple of minutes), which tries known networks in priority order
+    and switches to one that works. Actually connecting from here would
+    mean this same request's HTTP response has to survive the exact
+    moment the hotspot drops out from under the browser that's waiting
+    on it — the same radio that's serving this page over the fallback
+    hotspot is what switches to client mode. Saving the profile and
+    leaving the switch to the next scheduled check sidesteps that race
+    entirely, and reuses reconnect logic that's already been tested
+    rather than duplicating a riskier synchronous version of it here.
+
+    nmcli is invoked with a fixed argument LIST, never a shell string —
+    nothing in the SSID or password (quotes, semicolons, backticks,
+    whatever someone types) can break out of the intended command
+    boundaries this way. Returns (ok, message).
+    """
+    ssid = ssid.strip()
+    if not ssid:
+        return False, "Network name can't be empty."
+    if len(password) < 8:
+        return False, "Wi-Fi passwords need to be at least 8 characters."
+
+    con_name = ssid
+
+    # Remove any existing connection with this name first, so re-adding
+    # a network (e.g. to fix a typo'd password) replaces it cleanly
+    # instead of erroring out on a name collision or leaving a stale
+    # duplicate profile behind.
+    subprocess.run(["sudo", "nmcli", "connection", "delete", con_name], capture_output=True, timeout=10)
+
+    add_result = subprocess.run(
+        ["sudo", "nmcli", "connection", "add", "type", "wifi", "ifname", "wlan0",
+         "con-name", con_name, "ssid", ssid],
+        capture_output=True, text=True, timeout=15,
+    )
+    if add_result.returncode != 0:
+        return False, f"Couldn't save network: {add_result.stderr.strip()}"
+
+    mod_result = subprocess.run(
+        ["sudo", "nmcli", "connection", "modify", con_name,
+         "wifi-sec.key-mgmt", "wpa-psk", "wifi-sec.psk", password],
+        capture_output=True, text=True, timeout=15,
+    )
+    if mod_result.returncode != 0:
+        subprocess.run(["sudo", "nmcli", "connection", "delete", con_name], capture_output=True, timeout=10)
+        return False, f"Couldn't set password: {mod_result.stderr.strip()}"
+
+    return True, (f"'{ssid}' saved. The device will try connecting to it within the next "
+                   "couple of minutes — if this page stops responding, that's the hotspot "
+                   "switching off because it worked.")
+
+
+def _validate_station(station_id):
+    """Live-checks a station ID against NOAA before saving it, so a typo
+    or a station with no tide data (subordinate stations, for instance,
+    turned out to have more limited data than expected during this
+    project's own development) is caught here, immediately, rather than
+    only showing up later as a display error nobody's watching for.
+
+    Returns (ok, message):
+      - (True, None) — station has real predictions data
+      - (False, "...") — NOAA explicitly rejected this station; don't save
+      - (True, "warning...") — couldn't reach NOAA to check at all; a
+        network hiccup here shouldn't block saving a station ID that
+        might be perfectly valid, only one NOAA actively rejects should
+    """
+    try:
+        today = time.strftime("%Y%m%d")
+        tomorrow = time.strftime("%Y%m%d", time.localtime(time.time() + 86400))
+        resp = requests.get(
+            "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter",
+            params={
+                "station": station_id,
+                "product": "predictions",
+                "interval": "hilo",
+                "datum": "MLLW",
+                "units": "english",
+                "time_zone": "lst_ldt",
+                "format": "json",
+                "application": "tide_watch_eink_config",
+                "begin_date": today,
+                "end_date": tomorrow,
+            },
+            timeout=10,
+        )
+        data = resp.json()
+    except Exception as e:
+        return True, (f"Couldn't verify with NOAA right now ({e}) — saved anyway. "
+                       "Check the display in a few minutes to confirm the station works.")
+
+    if "error" in data:
+        msg = data["error"].get("message", "unknown error")
+        return False, f"NOAA rejected that station ID: {msg}"
+
+    if not data.get("predictions"):
+        return False, "NOAA returned no tide predictions for that station ID — double-check it's correct."
+
+    return True, None
+
+
+def _new_session():
+    token = secrets.token_hex(24)
+    _sessions[token] = time.time() + SESSION_TTL_SECONDS
+    return token
+
+
+def _session_valid(token):
+    if not token or token not in _sessions:
+        return False
+    if time.time() > _sessions[token]:
+        del _sessions[token]
+        return False
+    return True
+
+
+def _rate_limited():
+    cutoff = time.time() - LOCKOUT_SECONDS
+    while _failed_attempts and _failed_attempts[0] < cutoff:
+        _failed_attempts.pop(0)
+    return len(_failed_attempts) >= MAX_LOGIN_ATTEMPTS
+
+
+def request_pin():
+    """Generates a fresh PIN and asks tide_eink.py to display it.
+    Locked so two browser tabs clicking the button at the same instant
+    can't each generate a different PIN and leave the request file (and
+    the person's expectation of what's on screen) in an inconsistent
+    state — a real race condition found in an earlier version of this
+    same idea in a sibling project."""
+    with _pin_lock:
+        pin = f"{secrets.randbelow(1_000_000):06d}"
+        expires_at = time.time() + PIN_TTL_SECONDS
+        with open(PIN_REQUEST_PATH, "w") as f:
+            json.dump({"pin": pin, "expires_at": expires_at}, f)
+    return expires_at
+
+
+def _current_pin_request():
+    """Returns expires_at for a still-valid pending PIN request, or None.
+    Does not read the PIN itself here — this is only used to decide what
+    the login page should say, never to check a login attempt against."""
+    try:
+        with open(PIN_REQUEST_PATH) as f:
+            data = json.load(f)
+        if time.time() < data["expires_at"]:
+            return data["expires_at"]
+    except (FileNotFoundError, KeyError, ValueError, json.JSONDecodeError):
+        pass
+    return None
+
+
+def _check_pin(submitted):
+    """Validates a submitted PIN against the pending request. On success,
+    burns it immediately (deletes the request file) so it can never be
+    reused — tide_eink.py notices the file is gone and reverts the
+    display on its own next poll."""
+    try:
+        with open(PIN_REQUEST_PATH) as f:
+            data = json.load(f)
+    except (FileNotFoundError, ValueError, json.JSONDecodeError):
+        return False
+    if time.time() >= data.get("expires_at", 0):
+        return False
+    if not secrets.compare_digest(str(submitted), str(data.get("pin", ""))):
+        return False
+    try:
+        os.remove(PIN_REQUEST_PATH)
+    except FileNotFoundError:
+        pass
+    return True
+
+
+PAGE_STYLE = """
+<style>
+  body{font-family:-apple-system,Inter,system-ui,sans-serif;background:#F1EAD9;color:#20302C;
+       max-width:480px;margin:40px auto;padding:0 20px;}
+  h1{font-size:22px;color:#1F3B39;}
+  .card{background:#fff;border-radius:10px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.08);}
+  label{display:block;font-size:13px;font-weight:600;color:#2E5852;margin:14px 0 4px 0;}
+  input[type=text],input[type=number],input[type=password]{
+    width:100%;padding:9px 10px;border:1px solid #ccc;border-radius:6px;font-size:14px;box-sizing:border-box;}
+  .toggle-row{display:flex;align-items:center;gap:8px;margin:14px 0 0 0;}
+  .toggle-row input{width:auto;}
+  button{margin-top:14px;width:100%;padding:12px;background:#C79A3D;color:#1F3B39;
+         border:none;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer;}
+  button.secondary{background:#fff;border:1.5px solid #2E5852;color:#2E5852;}
+  .msg{background:#e8f3ea;border-left:4px solid #4a8f5c;padding:10px 14px;border-radius:4px;
+       font-size:13px;margin-bottom:16px;}
+  .err{background:#fbe9e7;border-left:4px solid #c0392b;padding:10px 14px;border-radius:4px;
+       font-size:13px;margin-bottom:16px;}
+  .logout{font-size:12px;text-align:right;margin-bottom:10px;}
+  .logout a{color:#2E5852;}
+  .hint{font-size:12px;color:#666;margin-top:4px;}
+  hr{border:none;border-top:1px solid #eee;margin:18px 0;}
+</style>
+"""
+
+
+def login_page(error=None, just_requested=False, notice=None):
+    err_html = f'<div class="err">{error}</div>' if error else ""
+    notice_html = f'<div class="msg">{notice}</div>' if notice else ""
+    pending = _current_pin_request()
+    if just_requested or pending:
+        status_html = ('<div class="msg">Check your Tide Watch display for the PIN. '
+                        'It expires in a few minutes.</div>')
+    else:
+        status_html = ""
+    return f"""<!DOCTYPE html><html><head><title>Tide Watch Config</title>{PAGE_STYLE}</head>
+<body>
+<h1>Tide Watch — Config Login</h1>
+<div class="card">
+{err_html}
+{notice_html}
+{status_html}
+<form method="POST" action="/request-pin">
+  <button type="submit" class="secondary">Show PIN on display</button>
+</form>
+<hr>
+<form method="POST" action="/login">
+  <label>PIN</label>
+  <input type="password" name="pin" autofocus inputmode="numeric" maxlength="6">
+  <button type="submit">Log in</button>
+</form>
+<div class="hint">The PIN only exists once you request it above, only
+appears on the physical display, and stops working the moment it's
+used or after a few minutes — whichever comes first.</div>
+</div>
+</body></html>"""
+
+
+def logged_out_page():
+    # Deliberately a plain static page rather than redirecting straight
+    # back into the login flow — auto-showing a fresh PIN request right
+    # after logout was a real bug in a sibling project's first version
+    # of this (it meant the display was constantly getting redrawn with
+    # PIN screens nobody asked for).
+    return f"""<!DOCTYPE html><html><head><title>Tide Watch Config</title>{PAGE_STYLE}</head>
+<body>
+<h1>Logged out</h1>
+<div class="card">
+<div class="msg">You've been logged out.</div>
+<a href="/"><button>Log back in</button></a>
+</div>
+</body></html>"""
+
+
+def settings_page(cfg, message=None, error=None, wifi_message=None, wifi_error=None):
+    msg_html = f'<div class="msg">{message}</div>' if message else ""
+    err_html = f'<div class="err">{error}</div>' if error else ""
+    wifi_msg_html = f'<div class="msg">{wifi_message}</div>' if wifi_message else ""
+    wifi_err_html = f'<div class="err">{wifi_error}</div>' if wifi_error else ""
+    return f"""<!DOCTYPE html><html><head><title>Tide Watch Config</title>{PAGE_STYLE}</head>
+<body>
+<div class="logout"><a href="/logout">Log out</a></div>
+<h1>Tide Watch Settings</h1>
+<div class="card">
+{msg_html}
+{err_html}
+<form method="POST" action="/save">
+  <label>Station label</label>
+  <input type="text" name="station_label" value="{cfg.get('station_label','')}">
+
+  <label>NOAA Station ID</label>
+  <input type="text" name="station_id" value="{cfg.get('station_id','')}">
+  <div class="hint">Changing this points the display at a different tide station entirely.</div>
+
+  <label>Refresh interval (minutes)</label>
+  <input type="number" name="refresh_minutes" min="5" value="{cfg.get('refresh_minutes',20)}">
+
+  <div class="toggle-row">
+    <input type="checkbox" name="flip180" id="flip180" {"checked" if cfg.get("flip180") else ""}>
+    <label for="flip180" style="margin:0;">Flip display 180°</label>
+  </div>
+
+  <label>Bottom display</label>
+  <select name="display_mode" id="display_mode" onchange="document.getElementById('show_sun_times_row').style.display = this.value === 'tide_curve' ? 'flex' : 'none';">
+    <option value="tide_curve" {"selected" if cfg.get("display_mode", "tide_curve") == "tide_curve" else ""}>Tide curve</option>
+    <option value="sun_graphic" {"selected" if cfg.get("display_mode") == "sun_graphic" else ""}>Sunrise &amp; sunset graphic</option>
+    <option value="combined" {"selected" if cfg.get("display_mode") == "combined" else ""}>Both — sun graphic above the tide curve</option>
+  </select>
+  <div class="hint">"Both" needs real room to keep each half legible — it automatically falls back to just the tide curve on the 2.13" and 2.9" panels regardless of this setting.</div>
+
+  <div class="toggle-row" id="show_sun_times_row" style="display:{'none' if cfg.get('display_mode') in ('sun_graphic', 'combined') else 'flex'};">
+    <input type="checkbox" name="show_sun_times" id="show_sun_times" {"checked" if cfg.get("show_sun_times", True) else ""}>
+    <label for="show_sun_times" style="margin:0;">Show sunrise/sunset marks on the tide curve</label>
+  </div>
+
+  <div class="toggle-row">
+    <input type="checkbox" name="pisugar_enabled" id="pisugar_enabled" {"checked" if cfg.get("pisugar_enabled") else ""}>
+    <label for="pisugar_enabled" style="margin:0;">PiSugar battery installed</label>
+  </div>
+
+  <button type="submit">Save &amp; apply</button>
+</form>
+<div class="hint" style="margin-top:16px;">
+  Saving restarts the display service to apply changes — expect a few
+  seconds of blank screen, then a fresh redraw. Display panel model
+  isn't editable here; that requires re-running the install script.
+</div>
+</div>
+
+<div class="card" style="margin-top:16px;">
+<h1 style="font-size:18px;">Wi-Fi networks</h1>
+{wifi_msg_html}
+{wifi_err_html}
+<form method="POST" action="/save-wifi">
+  <label>Network name (SSID)</label>
+  <input type="text" name="wifi_ssid" autocomplete="off">
+
+  <label>Password</label>
+  <input type="password" name="wifi_password" autocomplete="off">
+
+  <button type="submit">Save network</button>
+</form>
+<div class="hint" style="margin-top:10px;">
+  Saves the network but doesn't connect to it immediately — the device
+  already checks for known networks every couple of minutes whenever
+  it isn't connected to one, and will pick this one up on its next
+  check. If you're currently on the fallback hotspot, this page will
+  stop responding once it switches over — that means it worked.
+</div>
+</div>
+</body></html>"""
+
+
+class Handler(http.server.BaseHTTPRequestHandler):
+    def log_message(self, fmt, *args):
+        pass  # keep systemd journal quiet; nothing sensitive to log anyway
+
+    def _get_session_token(self):
+        raw = self.headers.get("Cookie")
+        if not raw:
+            return None
+        jar = cookies.SimpleCookie()
+        jar.load(raw)
+        if "session" in jar:
+            return jar["session"].value
+        return None
+
+    def _send_html(self, body, status=200, set_cookie=None):
+        self.send_response(status)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        if set_cookie:
+            self.send_header("Set-Cookie", f"session={set_cookie}; HttpOnly; SameSite=Strict; Path=/")
+        self.send_header("Content-Length", str(len(body.encode())))
+        self.end_headers()
+        self.wfile.write(body.encode())
+
+    def _redirect(self, location, set_cookie=None, clear_cookie=False):
+        self.send_response(303)
+        self.send_header("Location", location)
+        if set_cookie:
+            self.send_header("Set-Cookie", f"session={set_cookie}; HttpOnly; SameSite=Strict; Path=/")
+        if clear_cookie:
+            self.send_header("Set-Cookie", "session=; Path=/; Max-Age=0")
+        self.end_headers()
+
+    def _read_form(self):
+        length = int(self.headers.get("Content-Length", 0))
+        body = self.rfile.read(length).decode()
+        return {k: v[0] for k, v in parse_qs(body).items()}
+
+    def do_GET(self):
+        parsed = urlparse(self.path)
+        path = parsed.path
+        query = parse_qs(parsed.query)
+
+        if path == "/logout":
+            token = self._get_session_token()
+            if token in _sessions:
+                del _sessions[token]
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Set-Cookie", "session=; Path=/; Max-Age=0")
+            body = logged_out_page()
+            self.send_header("Content-Length", str(len(body.encode())))
+            self.end_headers()
+            self.wfile.write(body.encode())
+            return
+
+        token = self._get_session_token()
+        if _session_valid(token):
+            cfg = _load_config()
+            self._send_html(settings_page(cfg))
+        else:
+            notice = query.get("msg", [None])[0]
+            self._send_html(login_page(notice=notice))
+
+    def do_POST(self):
+        if self.path == "/request-pin":
+            if _rate_limited():
+                self._send_html(login_page("Too many attempts — wait a few minutes and try again."), status=429)
+                return
+            request_pin()
+            self._send_html(login_page(just_requested=True))
+            return
+
+        if self.path == "/login":
+            if _rate_limited():
+                self._send_html(login_page("Too many attempts — wait a few minutes and try again."), status=429)
+                return
+            form = self._read_form()
+            submitted = form.get("pin", "")
+            if _check_pin(submitted):
+                token = _new_session()
+                self._redirect("/", set_cookie=token)
+            else:
+                _failed_attempts.append(time.time())
+                self._send_html(login_page("Incorrect or expired PIN."), status=401)
+            return
+
+        if self.path == "/save":
+            token = self._get_session_token()
+            if not _session_valid(token):
+                self._redirect("/")
+                return
+            form = self._read_form()
+            cfg = _load_config()
+
+            new_station_id = form.get("station_id", cfg.get("station_id", "")).strip()
+            warning = None
+            if new_station_id != cfg.get("station_id"):
+                ok, msg = _validate_station(new_station_id)
+                if not ok:
+                    self._send_html(settings_page(cfg, error=msg), status=400)
+                    return
+                warning = msg  # set only on the "couldn't reach NOAA" case
+
+            cfg["station_label"] = form.get("station_label", cfg.get("station_label", ""))
+            cfg["station_id"] = new_station_id
+            try:
+                cfg["refresh_minutes"] = max(5, int(form.get("refresh_minutes", cfg.get("refresh_minutes", 20))))
+            except ValueError:
+                pass
+            cfg["flip180"] = "flip180" in form
+            cfg["show_sun_times"] = "show_sun_times" in form
+            submitted_mode = form.get("display_mode", "tide_curve")
+            cfg["display_mode"] = submitted_mode if submitted_mode in ("tide_curve", "sun_graphic", "combined") else "tide_curve"
+            cfg["pisugar_enabled"] = "pisugar_enabled" in form
+            _save_config(cfg)
+            # Signal tide_eink.py to restart and pick up the new config —
+            # this is the ONLY way this process ever affects the display.
+            open(RELOAD_TRIGGER_PATH, "w").close()
+            final_message = "Settings saved and applied — the display is restarting now."
+            if warning:
+                final_message += " " + warning
+
+            # Log out immediately after a successful save, the same way a
+            # banking site does after a sensitive action — an
+            # authenticated session shouldn't sit open in a browser tab
+            # any longer than the single change it was opened for.
+            if token in _sessions:
+                del _sessions[token]
+            self._redirect("/?msg=" + quote(final_message), clear_cookie=True)
+            return
+
+        if self.path == "/save-wifi":
+            token = self._get_session_token()
+            if not _session_valid(token):
+                self._redirect("/")
+                return
+            form = self._read_form()
+            cfg = _load_config()
+            ssid = form.get("wifi_ssid", "")
+            password = form.get("wifi_password", "")
+            ok, msg = _add_wifi_network(ssid, password)
+            if not ok:
+                self._send_html(settings_page(cfg, wifi_error=msg), status=400)
+                return
+
+            # Log out after a successful save, same reasoning as /save —
+            # an authenticated session shouldn't outlive the one change
+            # it was opened for.
+            if token in _sessions:
+                del _sessions[token]
+            self._redirect("/?msg=" + quote(msg), clear_cookie=True)
+            return
+
+        self._redirect("/")
+
+
+class ThreadingHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
+    daemon_threads = True
+
+
+def main():
+    server = ThreadingHTTPServer(("0.0.0.0", PORT), Handler)
+    print(f"Tide Watch config server listening on port {PORT}")
+    server.serve_forever()
+
+
+if __name__ == "__main__":
+    main()
+`;
+
+const HOTSPOT_MONITOR_SH = String.raw`#!/bin/bash
+# Tide Watch Wi-Fi fallback monitor.
+#
+# Run periodically via systemd timer. If no Wi-Fi connection is active,
+# brings up a dedicated "Hotspot" NetworkManager profile so the device
+# stays reachable — at a fixed address (10.42.0.1, NetworkManager's own
+# default for shared-mode connections) — even when it can't reach any
+# known network. If the hotspot is already active, tries known networks
+# again first and only stays in hotspot mode if none of them are
+# reachable, so it switches back on its own once the Pi is back in
+# range of a real network without needing anyone to intervene.
+#
+# Each time the hotspot actually comes up, its password is regenerated
+# fresh (not the fixed one set at install time) and written to a file
+# that tide_eink.py's own process polls for and draws on the physical
+# screen — the same reasoning as the web config page's login PIN,
+# applied to the hotspot itself: the password should only ever be
+# knowable by actually looking at the device, not sitting in a file
+# anyone could read. This script never touches the display directly;
+# writing that one file is the entire interface to tide_eink.py, same
+# as everywhere else in this project a non-display process needs to
+# affect what's shown.
+set -uo pipefail
+
+HOTSPOT_NAME="TideWatchHotspot"
+LOG_TAG="tide-eink-hotspot"
+HOTSPOT_INFO_PATH="$(dirname "$0")/.hotspot_info.json"
+
+active_connection_type() {
+    nmcli -t -f TYPE,STATE,NAME connection show --active 2>/dev/null | grep '^802-11-wireless:activated' | cut -d: -f3
+}
+
+current=$(active_connection_type)
+
+if [ "$current" = "$HOTSPOT_NAME" ]; then
+    # Already in hotspot mode — see if a known network is reachable now,
+    # in which case switch back to it and drop the hotspot. Trying each
+    # known non-hotspot Wi-Fi profile in priority order (nmcli already
+    # sorts by autoconnect-priority) mirrors ordinary boot-time behavior
+    # rather than inventing a different reconnect order for this case.
+    logger -t "$LOG_TAG" "Currently in hotspot mode, checking for known networks..."
+    known_networks=$(nmcli -t -f NAME,TYPE,AUTOCONNECT-PRIORITY connection show \
+        | awk -F: -v hs="$HOTSPOT_NAME" '$2=="802-11-wireless" && $1!=hs {print $3"\t"$1}' \
+        | sort -rn | cut -f2)
+    for net in $known_networks; do
+        if nmcli connection up "$net" ifname wlan0 2>/dev/null; then
+            logger -t "$LOG_TAG" "Reconnected to '$net' — leaving hotspot mode."
+            # Clears the on-screen Wi-Fi info — tide_eink.py notices the
+            # file is gone and reverts to the normal tide display the
+            # same way it does when a login PIN is burned or expires.
+            rm -f "$HOTSPOT_INFO_PATH"
+            exit 0
+        fi
+    done
+    logger -t "$LOG_TAG" "No known network reachable — staying in hotspot mode."
+    exit 0
+fi
+
+if [ -n "$current" ]; then
+    # Already connected to a real network — nothing to do.
+    exit 0
+fi
+
+# Not connected to anything at all. Give any in-progress connection
+# attempt a brief moment rather than immediately yanking the interface
+# into AP mode out from under it.
+sleep 10
+current=$(active_connection_type)
+if [ -n "$current" ]; then
+    exit 0
+fi
+
+logger -t "$LOG_TAG" "No Wi-Fi connection active — starting fallback hotspot with a fresh password."
+
+# 8 random digits from /dev/urandom -- plenty of entropy for this
+# purpose, and avoids adding a Python dependency to this one script
+# just for random-number generation.
+HOTSPOT_PIN=$(tr -dc '0-9' < /dev/urandom | head -c 8)
+
+# Read the actual configured SSID rather than assuming a fixed default,
+# so the on-screen info always matches reality even if someone
+# customized it at install time.
+HOTSPOT_SSID=$(nmcli -g 802-11-wireless.ssid connection show "$HOTSPOT_NAME" 2>/dev/null)
+if [ -z "$HOTSPOT_SSID" ]; then
+    HOTSPOT_SSID="TideWatch Setup"
+fi
+
+nmcli connection modify "$HOTSPOT_NAME" wifi-sec.psk "$HOTSPOT_PIN" 2>&1 | logger -t "$LOG_TAG"
+if nmcli connection up "$HOTSPOT_NAME" ifname wlan0 2>&1 | logger -t "$LOG_TAG"; then
+    cat > "$HOTSPOT_INFO_PATH" << EOF
+{"ssid": "$HOTSPOT_SSID", "pin": "$HOTSPOT_PIN"}
+EOF
+fi
+`;
+
+function buildWifiBlock(networks){
+  return networks.map((net, i) => {
+    const priority = 100 - i;
+    return `echo "Configuring Wi-Fi: ${net.ssid}"
+sudo nmcli con add type wifi ifname wlan0 con-name "${net.ssid}" ssid "${net.ssid}" \\
+  wifi-sec.key-mgmt wpa-psk wifi-sec.psk "${net.pass}" \\
+  connection.autoconnect yes connection.autoconnect-priority ${priority} || true
+`;
+  }).join('\n');
+}
+
+function buildWifiPowersaveBlock(disablePowersave, networks){
+  if(!disablePowersave){
+    return `echo "Leaving Wi-Fi power-save at its default setting."`;
+  }
+  // The Pi Zero W's onboard BCM43430 chip is well documented to
+  // intermittently drop its Wi-Fi connection when NetworkManager's
+  // power-save kicks in during idle moments — exactly the kind of quiet
+  // stretch a long-running install script full of apt/curl/git calls
+  // produces. Modifying just the affected connection(s) with `nmcli
+  // connection up` (rather than restarting NetworkManager entirely,
+  // which cycles every connection including any you're not touching)
+  // keeps this from being more disruptive than necessary to a session
+  // that's already running over the same link this changes.
+  const namedConnections = networks.map(net =>
+    `sudo nmcli connection modify "${net.ssid}" 802-11-wireless.powersave 2 2>/dev/null || true`
+  ).join('\n');
+
+  return `echo "Disabling Wi-Fi power-save (prevents intermittent drops on this hardware)..."
+sudo mkdir -p /etc/NetworkManager/conf.d
+sudo tee /etc/NetworkManager/conf.d/wifi-powersave-off.conf > /dev/null << 'PWEOF'
+[connection]
+wifi.powersave = 2
+PWEOF
+
+${namedConnections || '# no networks configured above to modify directly'}
+
+ACTIVE_WIFI_CONN=$(nmcli -t -f NAME,TYPE connection show --active 2>/dev/null | awk -F: '$2=="wifi"{print $1; exit}')
+if [ -n "$ACTIVE_WIFI_CONN" ]; then
+  sudo nmcli connection modify "$ACTIVE_WIFI_CONN" 802-11-wireless.powersave 2 2>/dev/null || true
+  echo "Re-applying Wi-Fi settings to the active connection ($ACTIVE_WIFI_CONN) — this may cause a brief, few-second reconnect blip, not a full drop."
+  sudo nmcli connection up "$ACTIVE_WIFI_CONN" || echo "WARNING: couldn't reactivate $ACTIVE_WIFI_CONN — power-save will still be off after your next reboot regardless."
+else
+  echo "No active Wi-Fi connection detected to reapply immediately — the setting will still take effect on next reboot or reconnect."
+fi
+echo "Wi-Fi power-save disabled."`;
+}
+
+function buildHotspotBlock(hotspotEnabled, hotspotSsid){
+  if(!hotspotEnabled){
+    return `echo "Wi-Fi fallback hotspot not enabled — skipping."`;
+  }
+  // The hotspot NetworkManager profile is created with autoconnect=no —
+  // it should only ever come up when hotspot_monitor.sh explicitly
+  // brings it up after confirming no real network is reachable, never
+  // on its own at boot the way a normal Wi-Fi profile would.
+  //
+  // The password set here is never actually used as a live password —
+  // hotspot_monitor.sh always overwrites it with a freshly random one
+  // before ever bringing the hotspot up, and shows that one on the
+  // display. NetworkManager just requires *some* valid WPA-PSK value
+  // to create a secured profile in the first place, so this is a fixed
+  // internal placeholder rather than something asked of the person
+  // setting this up — there's nothing meaningful for them to choose.
+  //
+  // Note the service file's heredoc delimiter is intentionally NOT
+  // quoted (unlike the timer's) — $INSTALL_DIR needs to actually expand
+  // here, the same fix an earlier version of the main tide-eink.service
+  // needed for the same reason.
+  return `echo "Setting up Wi-Fi fallback hotspot ('${hotspotSsid}')..."
+sudo nmcli connection add type wifi ifname wlan0 con-name TideWatchHotspot autoconnect no ssid "${hotspotSsid}" 2>/dev/null || true
+sudo nmcli connection modify TideWatchHotspot 802-11-wireless.mode ap 802-11-wireless.band bg ipv4.method shared
+sudo nmcli connection modify TideWatchHotspot wifi-sec.key-mgmt wpa-psk wifi-sec.psk "placeholder-overwritten-by-hotspot-monitor"
+
+cat > "$INSTALL_DIR/hotspot_monitor.sh" << 'HSEOF'
+${HOTSPOT_MONITOR_SH}
+HSEOF
+chmod +x "$INSTALL_DIR/hotspot_monitor.sh"
+
+sudo tee /etc/systemd/system/tide-eink-hotspot.service > /dev/null << HOTSPOTSERVICEEOF
+[Unit]
+Description=Tide Watch Wi-Fi fallback hotspot check
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=$INSTALL_DIR/hotspot_monitor.sh
+
+[Install]
+WantedBy=multi-user.target
+HOTSPOTSERVICEEOF
+
+sudo tee /etc/systemd/system/tide-eink-hotspot.timer > /dev/null << 'HOTSPOTTIMEREOF'
+[Unit]
+Description=Run Tide Watch Wi-Fi fallback hotspot check periodically
+
+[Timer]
+OnBootSec=90
+OnUnitActiveSec=2min
+
+[Install]
+WantedBy=timers.target
+HOTSPOTTIMEREOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable tide-eink-hotspot.timer
+sudo systemctl start tide-eink-hotspot.timer
+echo "Wi-Fi fallback hotspot configured — SSID '${hotspotSsid}', reachable at http://10.42.0.1:8080 when active."`;
+}
+
+function buildDriverBlock(driver){
+  if(!driver){
+    return `echo "No display model selected — skipping e-ink driver install."
+echo "The script will run in preview mode until you edit config.json and rerun this step."`;
+  }
+  // The full e-Paper repo bundles unrelated STM32 firmware source for
+  // dozens of microcontroller variants alongside the small Python driver
+  // folder we actually need — tens of thousands of files. A plain clone
+  // of the whole thing can exhaust disk space (or a /tmp size limit) on
+  // a resource-constrained Pi Zero W partway through checkout, which
+  // looks like a wall of "unable to write file" errors that have
+  // nothing to do with what's actually wrong. Sparse-checkout pulls
+  // only the one folder we need instead (confirmed: ~7.7MB / 144 files,
+  // vs. the full repo's ~33,000 files).
+  return `echo "Installing Waveshare e-ink driver (${driver})..."
+rm -rf /tmp/e-Paper
+if git clone --depth 1 --filter=blob:none --no-checkout https://github.com/waveshareteam/e-Paper.git /tmp/e-Paper \\
+   && (cd /tmp/e-Paper && git sparse-checkout init --cone && git sparse-checkout set RaspberryPi_JetsonNano/python/lib/waveshare_epd && git checkout); then
+  if [ -d "/tmp/e-Paper/RaspberryPi_JetsonNano/python/lib/waveshare_epd" ]; then
+    cp -r /tmp/e-Paper/RaspberryPi_JetsonNano/python/lib/waveshare_epd \\
+      "$INSTALL_DIR/venv/lib/python3."*"/site-packages/" \\
+      || echo "WARNING: couldn't copy driver files — see above."
+  else
+    echo "WARNING: checkout succeeded but the expected driver folder wasn't"
+    echo "found — Waveshare may have reorganized their repo. Check"
+    echo "https://github.com/waveshareteam/e-Paper manually."
+  fi
+else
+  echo "WARNING: couldn't clone the Waveshare driver repo (network error, disk"
+  echo "space, or the repo URL/layout has changed). Skipping driver install —"
+  echo "tide_eink.py will run in preview mode (saving PNGs instead of drawing"
+  echo "to the panel) until you install the driver by hand. This does not stop"
+  echo "the rest of the install."
+fi`;
+}
+
+function buildPiSugarBlock(pisugarEnabled, model){
+  if(!pisugarEnabled){
+    return `echo "No PiSugar battery HAT selected — skipping battery setup."`;
+  }
+
+  // pisugar-power-manager.sh normally stops mid-install to interactively
+  // ask which PiSugar model you have. That's fine typed in by hand, but
+  // breaks when the whole script is pasted in as one block (exactly how
+  // this tool's output is meant to be used) — the prompt never gets a
+  // real chance to be answered, since the rest of the pasted script is
+  // already queued up as keystrokes and gets consumed as bogus input to
+  // that prompt instead. This is a known PiSugar issue, not specific to
+  // this script: github.com/PiSugar/pisugar-power-manager-rs/issues/96
+  //
+  // PiSugar documents a non-interactive answer (via debconf preseeding)
+  // for exactly four models. Preseeding an undocumented value for one
+  // of the others could easily be silently wrong rather than actually
+  // fixing anything, so for S/S Plus/3 Plus this runs the installer as
+  // a separate step at the end instead, where its prompt can reach a
+  // real, uncluttered terminal and actually be answered.
+  if(model){
+    return `echo "Enabling I2C for PiSugar..."
+sudo raspi-config nonint do_i2c 0
+
+echo "Installing PiSugar power manager (pisugar-server) for ${model}..."
+sudo debconf-set-selections << 'DEBCONFEOF'
+pisugar-server pisugar-server/model select ${model}
+pisugar-poweroff pisugar-poweroff/model select ${model}
+DEBCONFEOF
+
+# PiSugar's own installer internally runs "sudo dpkg -i ..." to actually
+# install the packages (confirmed by reading scripts/pisugar-power-manager.sh
+# in their repo directly). sudo strips almost all environment variables by
+# default before running a command — including DEBIAN_FRONTEND — so simply
+# exporting it beforehand doesn't survive that nested sudo call, and dpkg
+# falls back to its normal interactive frontend regardless of the correct
+# debconf preseed above. A scoped sudoers rule fixes this properly: it
+# tells sudo to preserve this one variable, only for as long as this rule
+# file exists (removed immediately after, whether this succeeds or not).
+echo 'Defaults env_keep += "DEBIAN_FRONTEND"' | sudo tee /etc/sudoers.d/99-tidewatch-debconf > /dev/null
+sudo chmod 440 /etc/sudoers.d/99-tidewatch-debconf
+export DEBIAN_FRONTEND=noninteractive
+
+if curl -fsSL -o /tmp/pisugar-install.sh https://cdn.pisugar.com/release/pisugar-power-manager.sh; then
+  sudo bash /tmp/pisugar-install.sh
+  echo "pisugar-server installed — tide_eink.py will read battery status from it automatically."
+else
+  echo "WARNING: couldn't download the PiSugar installer (network error, or that URL"
+  echo "returned a 404 — PiSugar may have moved it). Skipping battery setup for now;"
+  echo "this does not stop the rest of the install. Install it later from:"
+  echo "https://github.com/PiSugar/pisugar-power-manager-rs"
+fi
+
+unset DEBIAN_FRONTEND
+sudo rm -f /etc/sudoers.d/99-tidewatch-debconf`;
+  }
+  return `echo "Enabling I2C for PiSugar..."
+sudo raspi-config nonint do_i2c 0
+echo ""
+echo "PiSugar S/S Plus/3 Plus don't have a documented non-interactive install"
+echo "option, so pisugar-server isn't installed automatically as part of this"
+echo "script — its model-selection prompt needs a real terminal to answer,"
+echo "which a pasted multi-command script can't reliably provide."
+echo ""
+echo "Once this script finishes, run this BY ITSELF (not pasted alongside"
+echo "anything else) to install it, and answer its prompt when it appears:"
+echo "  curl -fsSL -o /tmp/pisugar-install.sh https://cdn.pisugar.com/release/pisugar-power-manager.sh && sudo bash /tmp/pisugar-install.sh"
+echo ""`;
+}
+
+document.getElementById('generateBtn').addEventListener('click', () => {
+  const stationId = document.getElementById('stationId').value.trim() || '9414290';
+  const stationLabel = document.getElementById('stationLabel').value.trim() || 'San Francisco, CA';
+  const [driver, dWidth, dHeight] = document.getElementById('displayModel').value.split('|');
+  const hostname = document.getElementById('hostname').value.trim() || 'tidewatch';
+  const pisugarEnabled = document.getElementById('pisugarEnabled').checked;
+  const pisugarModel = pisugarEnabled ? document.getElementById('pisugarModel').value : '';
+  const disablePowersave = document.getElementById('disablePowersave').checked;
+  const hotspotEnabled = document.getElementById('hotspotEnabled').checked;
+  const hotspotSsid = document.getElementById('hotspotSsid').value.trim() || 'TideWatch Setup';
+  const flip180 = document.getElementById('flip180').checked;
+  const showSunTimes = document.getElementById('showSunTimes').checked;
+  const displayMode = document.getElementById('displayMode').value;
+
+  const networks = Array.from(document.querySelectorAll('.wifi-card')).map(card => ({
+    ssid: card.querySelector('.net-ssid').value.trim(),
+    pass: card.querySelector('.net-pass').value,
+  })).filter(n => n.ssid);
+
+  const config = {
+    station_id: stationId,
+    station_label: stationLabel,
+    display_driver: driver || "",
+    display_width: parseInt(dWidth, 10),
+    display_height: parseInt(dHeight, 10),
+    refresh_minutes: refreshMinutes,
+    pisugar_enabled: pisugarEnabled,
+    flip180: flip180,
+    show_sun_times: showSunTimes,
+    display_mode: displayMode,
+  };
+
+  const script = `#!/bin/bash
+set -euo pipefail
+
+# ============================================================
+# Tide Watch install script — generated by the Tide Watch Configurator
+# Station: ${stationLabel} (${stationId})
+# ============================================================
+#
+# Everything below is logged to this file, in addition to your terminal,
+# so if the connection to this device drops partway through, reconnecting
+# and running \`cat ~/tide-eink-install.log\` shows exactly how far it got
+# and what the last command was — no need to guess from memory.
+LOGFILE="$HOME/tide-eink-install.log"
+exec > >(tee -a "$LOGFILE") 2>&1
+
+on_error() {
+  echo ""
+  echo "=========================================================="
+  echo "INSTALL STOPPED — failed at line $1: $2"
+  echo "Full transcript saved to: $LOGFILE"
+  echo "Common causes: 'apt update' hitting a stale package mirror,"
+  echo "or a temporary network issue reaching GitHub/PiSugar's CDN."
+  echo "Fix the issue above and re-run this script — steps that"
+  echo "already finished (packages, files already written) will"
+  echo "just be redone quickly, nothing gets corrupted by re-running."
+  echo "=========================================================="
+}
+trap 'on_error $LINENO "$BASH_COMMAND"' ERR
+
+if [ -z "\${STY:-}" ] && [ -z "\${TMUX:-}" ]; then
+  echo "NOTE: you're not running this inside 'screen' or 'tmux'. If your SSH"
+  echo "connection drops partway through, the install will stop right there"
+  echo "(though nothing will be left broken — see the note above about"
+  echo "re-running). For a long-running unattended install, consider"
+  echo "restarting inside one: run 'screen -S install', then paste this"
+  echo "script again inside it."
+  echo ""
+fi
+
+CURRENT_USER=$(whoami)
+INSTALL_DIR="$HOME/tide_eink"
+
+echo "Configuring SSH keepalives..."
+echo "(long quiet stretches during apt/git/curl steps can otherwise let a"
+echo "router's idle-connection timeout silently kill the SSH session, which"
+echo "looks like a random crash but has nothing to do with what's running)"
+if ! grep -q "^ClientAliveInterval" /etc/ssh/sshd_config; then
+  echo "ClientAliveInterval 30" | sudo tee -a /etc/ssh/sshd_config > /dev/null
+fi
+if ! grep -q "^ClientAliveCountMax" /etc/ssh/sshd_config; then
+  echo "ClientAliveCountMax 3" | sudo tee -a /etc/ssh/sshd_config > /dev/null
+fi
+if sudo sshd -t 2>/dev/null; then
+  sudo systemctl reload ssh 2>/dev/null || sudo systemctl reload sshd 2>/dev/null || true
+else
+  echo "WARNING: sshd config check failed — skipping reload, leaving sshd_config"
+  echo "unchanged. This doesn't stop the rest of the install."
+fi
+
+echo "Setting hostname to ${hostname}..."
+sudo hostnamectl set-hostname "${hostname}"
+grep -q "${hostname}" /etc/hosts || echo "127.0.1.1 ${hostname}" | sudo tee -a /etc/hosts > /dev/null
+
+echo "Enabling SPI..."
+sudo raspi-config nonint do_spi 0
+
+${buildPiSugarBlock(pisugarEnabled, pisugarModel)}
+
+echo "Installing system packages..."
+if ! sudo apt update; then
+  echo ""
+  echo "'apt update' failed — this is the single most common cause of a 404"
+  echo "on a fresh Pi install. It usually means the package mirror your Pi"
+  echo "is pointed at is stale or unreachable, not a problem with this script."
+  echo "Try running 'sudo apt update' by itself to see the exact failing URL,"
+  echo "or check that the Pi has working internet access, then re-run this script."
+  exit 1
+fi
+# The last 5 packages below are Pillow's runtime image-format libraries.
+# Raspberry Pi's pre-built ARM wheels (from piwheels.org) link against
+# these as system libraries rather than bundling them the way the
+# desktop PyPI wheel does, so without them Pillow fails at import time
+# with an ImportError naming whichever one is missing (confirmed twice
+# over — libopenjp2.so.7 and libfreetype.so.6 — while building this).
+sudo apt install -y python3-pip python3-venv fonts-dejavu git libopenjp2-7 libfreetype6 libjpeg62-turbo libtiff6 liblcms2-2 libwebp7
+
+${buildWifiBlock(networks)}
+
+${buildWifiPowersaveBlock(disablePowersave, networks)}
+
+${buildHotspotBlock(hotspotEnabled, hotspotSsid)}
+
+echo "Setting up project directory..."
+mkdir -p "$INSTALL_DIR"
+cd "$INSTALL_DIR"
+
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+# spidev/gpiozero/lgpio are what the e-ink driver itself needs to talk
+# to the panel over SPI/GPIO — without them, importing the driver fails
+# with ModuleNotFoundError, which tide_eink.py deliberately treats as
+# "no driver yet" and falls back to preview-mode PNGs rather than
+# crashing. That fallback is meant for before you've picked a panel —
+# not a substitute for these actually being installed.
+pip install requests Pillow spidev gpiozero lgpio
+
+cat > "$INSTALL_DIR/config.json" << 'CONFIGEOF'
+${JSON.stringify(config, null, 2)}
+CONFIGEOF
+
+cat > "$INSTALL_DIR/tide_eink.py" << 'PYEOF'
+${TIDE_EINK_PY}
+PYEOF
+
+echo "Installing web config page..."
+cat > "$INSTALL_DIR/config_server.py" << 'PYEOF'
+${CONFIG_SERVER_PY}
+PYEOF
+
+${buildDriverBlock(driver)}
+
+echo "Installing systemd service..."
+# Note: this heredoc's delimiter is intentionally NOT quoted (unlike the
+# config.json/tide_eink.py ones above) — we need $CURRENT_USER and
+# $INSTALL_DIR to actually expand here. A quoted delimiter would write
+# those variable names into the service file completely literally
+# instead of their real values, which is exactly what this used to do.
+sudo tee /etc/systemd/system/tide-eink.service > /dev/null << SERVICEEOF
+[Unit]
+Description=Tide Watch e-ink monitor
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=10
+
+[Service]
+Type=simple
+User=$CURRENT_USER
+WorkingDirectory=$INSTALL_DIR
+ExecStart=$INSTALL_DIR/venv/bin/python $INSTALL_DIR/tide_eink.py
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+SERVICEEOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable tide-eink
+sudo systemctl restart tide-eink
+
+echo "Installing web config service..."
+# Lets the (unprivileged) config server save Wi-Fi network profiles from
+# the web page — scoped to only "connection add/modify/delete", never
+# "connection up". Bringing a connection up is left entirely to
+# hotspot_monitor.sh (which already runs as root), since that avoids the
+# same request's HTTP response having to survive the exact moment the
+# hotspot drops out from under the browser waiting on it.
+sudo tee /etc/sudoers.d/99-tidewatch-wifi > /dev/null << SUDOERSEOF
+$CURRENT_USER ALL=(ALL) NOPASSWD: /usr/bin/nmcli connection add *, /usr/bin/nmcli connection modify *, /usr/bin/nmcli connection delete *
+SUDOERSEOF
+sudo chmod 440 /etc/sudoers.d/99-tidewatch-wifi
+
+sudo tee /etc/systemd/system/tide-eink-config.service > /dev/null << SERVICEEOF
+[Unit]
+Description=Tide Watch web config page
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=10
+
+[Service]
+Type=simple
+User=$CURRENT_USER
+WorkingDirectory=$INSTALL_DIR
+ExecStart=$INSTALL_DIR/venv/bin/python $INSTALL_DIR/config_server.py
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+SERVICEEOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable tide-eink-config
+sudo systemctl restart tide-eink-config
+
+echo ""
+echo "Done. Station: ${stationLabel} (${stationId})"
+echo "Display: ${driver ? driver : 'preview mode — no panel selected yet'}"
+echo "Battery: ${pisugarEnabled ? (pisugarModel ? 'PiSugar (' + pisugarModel + ') installed — check with: pisugar-server status' : 'PiSugar selected — run the printed standalone command above to finish setup') : 'not configured'}"
+echo "Wi-Fi power-save: ${disablePowersave ? 'disabled (recommended, for connection stability)' : 'left at default'}"
+echo "Display orientation: ${flip180 ? 'flipped 180°' : 'normal'}"
+echo "Bottom display: ${displayMode === 'sun_graphic' ? 'sunrise & sunset graphic' : 'tide curve'}"
+echo "Sunrise/sunset marks: ${displayMode === 'sun_graphic' ? 'n/a (using graphic instead)' : (showSunTimes ? 'enabled' : 'disabled')}"
+echo "Wi-Fi fallback hotspot: ${hotspotEnabled ? "'" + hotspotSsid + "' (active only when no known network is reachable)" : 'not configured'}"
+echo "Refresh: every ${refreshMinutes} minutes"
+echo "Check status with: sudo systemctl status tide-eink"
+echo ""
+echo "Web config: http://${hostname}.local:8080 — click \\"Show PIN on display\\" to log in"
+echo "If .local doesn't resolve, use the Pi's IP address instead — check with: hostname -I"
+`;
+
+  const blob = new Blob([script], {type: 'text/plain'});
+  const url = URL.createObjectURL(blob);
+  document.getElementById('downloadLink').href = url;
+  document.getElementById('scriptOutput').value = script;
+  document.getElementById('output').classList.add('show');
+  document.getElementById('output').scrollIntoView({behavior:'smooth'});
+});
+
+document.getElementById('copyBtn').addEventListener('click', async () => {
+  const textarea = document.getElementById('scriptOutput');
+  const btn = document.getElementById('copyBtn');
+  try {
+    await navigator.clipboard.writeText(textarea.value);
+  } catch (err) {
+    // Clipboard API unavailable (e.g. non-HTTPS context) — fall back to
+    // the old select+execCommand approach so copying still works.
+    textarea.select();
+    document.execCommand('copy');
+  }
+  const original = btn.textContent;
+  btn.textContent = 'Copied!';
+  btn.classList.add('copied');
+  setTimeout(() => {
+    btn.textContent = original;
+    btn.classList.remove('copied');
+  }, 1800);
+});
+</script>
+</body>
+</html>
