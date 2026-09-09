@@ -135,10 +135,12 @@ connected devices to find the Pi's IP address instead (it'll be named
 
 ## Step 4: Generate your setup script
 
-1. Download [`index.html`](index.html) from this repository onto your
-   own computer (not the Pi) and double-click it to open it in your
-   regular web browser. It works completely offline — nothing here
-   needs the internet or any installation.
+1. Open the setup tool: **[inphenity.github.io/TideWatch](https://inphenity.github.io/TideWatch/)**
+   — this runs entirely in your browser; nothing you type is sent
+   anywhere. (If you'd rather not rely on that link staying up, you can
+   also download [`index.html`](index.html) from this repository onto
+   your own computer and double-click it to open the exact same tool
+   offline.)
 2. Fill in:
    - Your Wi-Fi network name(s) and password(s) — this is copied onto
      the Pi so it can reconnect on its own after reboots.
@@ -199,8 +201,9 @@ for how to change settings later without repeating any of this.
 
 ## Quick start (for the experienced)
 
-Open [`index.html`](index.html) in a browser — works fully offline, no
-server needed. Fill in your Wi-Fi networks and tide station, click
+Open the setup tool — **[inphenity.github.io/TideWatch](https://inphenity.github.io/TideWatch/)**,
+or [`index.html`](index.html) from this repo if you'd rather run it
+offline — fill in your Wi-Fi networks and tide station, click
 generate, and paste the resulting script into a fresh Raspberry Pi OS
 Lite install over SSH. It sets up everything: the Python environment,
 the e-ink driver, the web config page, the Wi-Fi fallback hotspot, all
