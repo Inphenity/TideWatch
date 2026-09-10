@@ -164,12 +164,13 @@
       <label>E-ink panel</label>
       <select id="displayModel">
         <option value="epd2in13_V4|250|122">Waveshare 2.13" (250×122)</option>
-        <option value="epd2in7|264|176">Waveshare 2.7" (264×176)</option>
+        <option value="epd2in7|264|176">Waveshare 2.7" (264×176) — the one with 4 onboard buttons</option>
         <option value="epd2in9_V2|296|128">Waveshare 2.9" (296×128)</option>
         <option value="epd4in2_V2|400|300">Waveshare 4.2" (400×300)</option>
         <option value="epd7in5_V2|800|480">Waveshare 7.5" (800×480)</option>
         <option value="|250|122">Decide later (preview mode, 2.13" layout)</option>
       </select>
+      <div class="hint" style="margin-top:4px;">Picking the wrong model here is the single most common cause of a garbled or partial-looking display — the code will run without any error, since it has no way to know it's talking to different hardware than expected. If your panel has 4 physical buttons on it, that's the 2.7" — none of the other four sizes have onboard buttons.</div>
     </div>
     <div class="toggle-row">
       <input type="checkbox" id="flip180">
@@ -221,6 +222,7 @@
     <div class="field">
       <label>Hostname</label>
       <input type="text" id="hostname" value="tidewatch">
+      <div class="hint" style="margin-top:4px;">If you're setting up more than one of these, give each one a different hostname (e.g. "tidewatch2") — this defaults to the same value every time, so two devices left at the default will both show up on your network with the same name, and things like SSH and .local addresses will unpredictably land on whichever one happens to answer first.</div>
     </div>
   </section>
 
@@ -241,6 +243,7 @@
         <label>Hotspot network name (SSID)</label>
         <input type="text" id="hotspotSsid" value="TideWatch Setup">
         <div class="hint" style="margin-top:4px;">No password to set here — one is randomly generated and shown on the device's own display each time the hotspot actually activates, so it's only ever knowable by looking at the device. Once connected, reach it at <code>http://10.42.0.1:8080</code>.</div>
+        <div class="hint" style="margin-top:4px;">If you're setting up more than one of these, give each one a different name here too — otherwise, if two devices both lose Wi-Fi around the same time, they'll broadcast identical, indistinguishable networks. The address you connect to afterward (<code>10.42.0.1</code>) is also the same on every device, so a unique name here is the only way to know which physical device you're actually about to configure.</div>
       </div>
     </div>
   </section>
@@ -2670,6 +2673,17 @@ fi
 # over — libopenjp2.so.7 and libfreetype.so.6 — while building this).
 sudo apt install -y python3-pip python3-venv fonts-dejavu git libopenjp2-7 libfreetype6 libjpeg62-turbo libtiff6 liblcms2-2 libwebp7
 
+# Created here, before the Wi-Fi/hotspot blocks below, because the
+# hotspot block writes hotspot_monitor.sh into this directory — it
+# needs to already exist. An earlier version of this script created it
+# further down, in the "project directory" step, which meant every
+# fresh install with the fallback hotspot enabled (the default) failed
+# immediately with "No such file or directory" the moment it tried to
+# write that file into a directory that didn't exist yet. Confirmed
+# from a real install log showing the script stopping at exactly that
+# point, not assumed.
+mkdir -p "$INSTALL_DIR"
+
 ${buildWifiBlock(networks)}
 
 ${buildWifiPowersaveBlock(disablePowersave, networks)}
@@ -2677,7 +2691,6 @@ ${buildWifiPowersaveBlock(disablePowersave, networks)}
 ${buildHotspotBlock(hotspotEnabled, hotspotSsid)}
 
 echo "Setting up project directory..."
-mkdir -p "$INSTALL_DIR"
 cd "$INSTALL_DIR"
 
 python3 -m venv venv
