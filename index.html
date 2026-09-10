@@ -164,13 +164,15 @@
       <label>E-ink panel</label>
       <select id="displayModel">
         <option value="epd2in13_V4|250|122">Waveshare 2.13" (250×122)</option>
-        <option value="epd2in7|264|176">Waveshare 2.7" (264×176) — the one with 4 onboard buttons</option>
+        <option value="epd2in7|264|176">Waveshare 2.7" — original/V1 (264×176) — the one with 4 onboard buttons</option>
+        <option value="epd2in7_V2|264|176">Waveshare 2.7" — V2 (264×176) — the one with 4 onboard buttons</option>
         <option value="epd2in9_V2|296|128">Waveshare 2.9" (296×128)</option>
         <option value="epd4in2_V2|400|300">Waveshare 4.2" (400×300)</option>
         <option value="epd7in5_V2|800|480">Waveshare 7.5" (800×480)</option>
         <option value="|250|122">Decide later (preview mode, 2.13" layout)</option>
       </select>
       <div class="hint" style="margin-top:4px;">Picking the wrong model here is the single most common cause of a garbled or partial-looking display — the code will run without any error, since it has no way to know it's talking to different hardware than expected. If your panel has 4 physical buttons on it, that's the 2.7" — none of the other four sizes have onboard buttons.</div>
+      <div class="hint" style="margin-top:4px;">The 2.7" specifically ships as two genuinely different hardware revisions that need different drivers — check the panel's own circuit board for a small "Rev" label (e.g. "Rev 2.2" is the V2 revision). If you're not sure, or there's no visible label: try V1 first, and if the display never updates at all despite the service running with no errors, that specific symptom is the signature of this exact mismatch — switch to V2 and it should start working immediately, no other changes needed.</div>
     </div>
     <div class="toggle-row">
       <input type="checkbox" id="flip180">

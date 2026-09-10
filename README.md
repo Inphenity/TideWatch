@@ -191,6 +191,17 @@ for how to change settings later without repeating any of this.
   HAT is fully and firmly seated on the Pi's pins (see Step 2), and
   that the display size you chose in the setup tool actually matches
   the panel you have.
+- **You picked the 2.7" panel, everything runs with no errors
+  (`sudo systemctl status tide-eink` shows clean, active, no crashes),
+  but the physical panel never updates at all** — this isn't a driver
+  bug or dead hardware, it's very likely the 2.7" panel's own V1/V2
+  split: it ships as two different hardware revisions needing
+  different drivers, and using the wrong one produces exactly this
+  symptom — a completely healthy-looking service that just never
+  visibly refreshes the panel. Switching between `epd2in7` and
+  `epd2in7_V2` in `config.json` and restarting the service (no
+  reinstall needed) is usually the entire fix. See the setup tool's
+  own hint text on this option for how to tell which one you have.
 - **The install script prints errors about `apt update` failing** —
   this almost always means the Pi isn't actually connected to Wi-Fi.
   Double check the network name and password you entered in Raspberry
